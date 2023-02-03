@@ -43,9 +43,7 @@
 		</style>
 	</head>
 	<body>
-		<div class="overbtn" style="display:none">
-		<button onclick="loadScene('jungleheatsky_scene')">Jungle Heat</button>
-		<button onclick="loadScene('mawholes_scene')">Maw Holes</button>
+		<div class="overbtn" style="display:none" id="scenebtn">
 		</div>
 		<div class="check">
 		<h1>Are you over 18?</h1>
@@ -53,15 +51,19 @@
 		<button onclick="window.location = 'https://www.rfc-editor.org/rfc/rfc2324';">No</button>
 		</div>
 		<script src="https://threejs.org/build/three.js"></script>
-		<script src=""></script>
 		<script>
 function safetypass() {
-	const script = document.createElement('script');
+	script = document.createElement('script');
 	script.async = true;
-	script.src = "sceneloader.js";
+	script.src = "scenes.js";
 	document.body.appendChild(script);
 	document.getElementsByClassName("overbtn")[0].style = "";
 	document.getElementsByClassName("check")[0].style.display = "none";
+	
+	script = document.createElement('script');
+	script.async = true;
+	script.src = "sceneloader.js";
+	document.body.appendChild(script);
 }
 	</script>
 	</body>
