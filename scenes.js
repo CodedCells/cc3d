@@ -3,7 +3,8 @@ var sceneFiles = {
 	"mawholes": "Maw Holes",
 	"fexmilking": "Fex Milking",
 	/*"unendinghorny": "Unending Horny",*/
-	"ticklishvibedwarden": "Ticklish Vibed Warden"
+	"ticklishvibedwarden": "Ticklish Vibed Warden",
+	"chaltable": "Chal Table"
 }
 
 btnContainer = document.getElementById("scenebtn");
