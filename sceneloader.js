@@ -3,6 +3,7 @@ let ready = false;
 
 var scene;
 var camera;
+var fpscamera;
 var renderer;
 var canvas;
 var sphere;
@@ -11,10 +12,15 @@ var clips;
 
 var lastTime;
 
+let forward = new THREE.Vector3();
+
 function onResize () {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	camera.updateProjectionMatrix();
+	
+	fpscamera.aspect = window.innerWidth / window.innerHeight;
+	fpscamera.updateProjectionMatrix();
 }
 
 const lockChangeAlert = () => {
@@ -32,15 +38,46 @@ const clickEvent = (event) => {
 	}
 };
 
-const moveEvent = (event) => {
+let lookX = 0, lookY = 0;
+let mouseX = 0, mouseY = 0;
+let velocity = new THREE.Vector3();
+
+function onDocumentMouseMove(event) {
 	if (isLocked) {
-		const x = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-		const y = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-	
-		camera.rotation.y -= x * 0.002;
-		camera.rotation.x -= y * 0.002;
+		mouseX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
+		mouseY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
+		
+		lookX -= mouseX * 0.002;
+		lookY -= mouseY * 0.002;
+		
+		fpscamera.lookAt(new THREE.Vector3(
+			fpscamera.position.x + Math.sin(lookX),
+			fpscamera.position.y + lookY,
+			fpscamera.position.z + Math.cos(lookX)
+		));
 	}
 }
+
+document.addEventListener('mousemove', onDocumentMouseMove, false);
+
+function onDocumentKeyDown(event) {
+	switch (event.code) {
+		case 'KeyW':
+			velocity.z = -0.05;
+			break;
+		case 'KeyS':
+			velocity.z = 0.05;
+			break;
+		case 'KeyA':
+			velocity.x = -0.05;
+			break;
+		case 'KeyD':
+			velocity.x = 0.05;
+			break;
+	}
+}
+
+document.addEventListener('keydown', onDocumentKeyDown, false);
 
 function animate(now) {
 	requestAnimationFrame( animate );
@@ -50,7 +87,11 @@ function animate(now) {
 	var elapsed = now - lastTime;
 	lastTime = now;
 	
-	if (ready) renderer.render( scene, camera );
+	fpscamera.position.x += velocity.x;
+	fpscamera.position.z += velocity.z;
+	velocity.set(0, 0, 0);
+  
+	if (ready) renderer.render( scene, fpscamera );
 	
 	if (mixer) mixer.update(elapsed / 1000);
 };
@@ -75,6 +116,11 @@ function basicScene() {
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	canvas = renderer.domElement;
 	document.body.appendChild( canvas );
+	
+	fpscamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	fpscamera.position.y = 3;
+	scene.add(fpscamera);
+	
 	ready = true;
 }
 
@@ -85,13 +131,13 @@ document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 document.addEventListener('webkitpointerlockchange', lockChangeAlert, false);
 
 function onDocumentMouseWheel(event) {
-  camera.fov += event.deltaY * 0.01;
-  camera.updateProjectionMatrix();
+	fpscamera.fov += event.deltaY * 0.01;
+	fpscamera.fov = Math.min(Math.max(fpscamera.fov, 1), 179)
+	fpscamera.updateProjectionMatrix();
 }
 
 document.addEventListener("wheel", onDocumentMouseWheel, false);
 canvas.addEventListener('click', clickEvent, false);
-document.addEventListener('mousemove', moveEvent, false);
 
 window.addEventListener('resize', onResize, false );
 
@@ -108,6 +154,13 @@ function importScene(data) {
 	clips.forEach( function ( clip ) {
 		mixer.clipAction( clip ).play();
 	} );
+	fpscamera.position.copy(camera.position);
+	fpscamera.quaternion.copy(camera.quaternion);
+	fpscamera.fov = camera.fov;
+	lookX = camera.rotation.x;
+	lookY = camera.rotation.y;
+	
+	scene.add(fpscamera);
 	//scene.add(sphere);
 	
 	//let ambientLight = new THREE.AmbientLight(0xB1BEDD);
@@ -118,6 +171,6 @@ function importScene(data) {
 
 function loadScene(name) {
 	fetch("scenes/" + name + ".json")
-    .then((response) => response.json())
-    .then((json) => importScene(json));
+		.then((response) => response.json())
+		.then((json) => importScene(json));
 }
