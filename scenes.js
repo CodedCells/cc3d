@@ -5,7 +5,8 @@ var sceneFiles = {
 	"fexmilking": "Fex Milking",
 	/*"unendinghorny": "Unending Horny",*/
 	"ticklishvibedwarden": "Ticklish Vibed Warden",
-	"chaltable": "Chal Table"
+	"chaltable": "Chal Table",
+	"trottrim": "Trot Trim"
 }
 
 btnContainer = document.getElementById("scenebtn");
