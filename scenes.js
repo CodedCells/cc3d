@@ -1,4 +1,5 @@
 var sceneFiles = {
+	"": "-- Select Scene --",
 	"jungleheatsky": "Jungle Heat",
 	"mawholes": "Maw Holes",
 	"fexmilking": "Fex Milking",
@@ -8,11 +9,18 @@ var sceneFiles = {
 }
 
 btnContainer = document.getElementById("scenebtn");
+const btn = document.createElement('select');
+btn.onchange = function () {
+	if (this.value)
+		loadScene(this.value)
+}
+btn.label = "Select Scene";
 
 for (const [sid, name] of Object.entries(sceneFiles)) {
-	const btn = document.createElement('button');
-	btn.innerHTML = name;
-	btn.setAttribute("onclick", "loadScene('" + sid + "');");
-	btnContainer.appendChild(btn);
+	opt = document.createElement('option');
+	opt.innerHTML = name;
+	opt.value = sid;
+	btn.appendChild(opt);
 	//console.log(sid, name);
 }
+btnContainer.appendChild(btn);
