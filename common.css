@@ -9,6 +9,14 @@ body {
 	position: fixed;
 	z-index: 99999;
 }
+#loader {
+	display: block;
+	position: fixed;
+	z-index: 5555;
+	width: 100vw;
+	height: 100vh;
+	text-align: center;
+}
 .check {
 	text-align: center;
 	width: 100%;

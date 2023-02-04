@@ -150,6 +150,8 @@ canvas.addEventListener('click', clickEvent, false);
 window.addEventListener('resize', onResize, false );
 
 function importScene(data) {
+	loader.style.display = "none";
+	
 	sceneData = data;
 	scene = new THREE.ObjectLoader().parse( sceneData );
 	camera = scene.children[0].children.find( child => child instanceof THREE.PerspectiveCamera );
@@ -182,6 +184,8 @@ function importScene(data) {
 }
 
 function loadScene(name) {
+	loader.style.display = "initial";
+	
 	fetch("scenes/" + name + ".json")
 		.then((response) => response.json())
 		.then((json) => importScene(json));
