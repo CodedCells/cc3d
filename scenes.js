@@ -25,3 +25,7 @@ for (const [sid, name] of Object.entries(sceneFiles)) {
 	//console.log(sid, name);
 }
 btnContainer.appendChild(btn);
+
+info = document.createElement('span');
+info.innerHTML = " Click to Enter, Space to toggle camera, WASD to move freecam, R to reset.";
+btnContainer.appendChild(info);
