@@ -1,0 +1,42 @@
+<body onload="init();" onclick="init()">
+<Script>
+let entityTypes = ["allay", "axolotl", "bat", "bee", "blaze", "cat", "cave_spider", "chicken", "cod", "cow", "creeper", "dolphin", "donkey", "drowned", "elder_guardian", "ender_dragon", "enderman", "endermite", "evoker", "fox", "frog", "ghast", "giant", "glow_squid", "goat", "guardian", "hoglin", "horse", "husk", "illusioner", "iron_golem", "llama", "magma_cube", "mule", "mushroom_cow", "ocelot", "panda", "parrot", "phantom", "pig", "piglin", "piglin_brute", "pillager", "polar_bear", "pufferfish", "rabbit", "ravager", "salmon", "sheep", "shulker", "silverfish", "skeleton", "skeleton_horse", "slime", "snowman", "spider", "squid", "stray", "strider", "tadpole", "trader_llama", "tropical_fish", "turtle", "vex", "villager", "vindicator", "wandering_trader", "warden", "witch", "wither", "wither_skeleton", "wolf", "zoglin", "zombie", "zombie_horse", "zombie_villager", "zombified_piglin"];
+
+function choice(arr) {
+	return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function mobOnMob(count) {
+	if (count == undefined) count = 2;
+	var mobs = [];
+	
+	for (var i = 0; i < count; i++)
+		mobs.push(choice(entityTypes));
+	
+	return mobs;
+}
+
+function init() {
+	var mobs = mobOnMob();
+	display(mobs);
+}
+
+function name(v) {
+	v = v.split("_");
+	for (var i = 0; i < v.length; i++)
+		v[i] = v[i].substr(0, 1).toUpperCase() + v[i].substr(1);
+	
+	return v.join(" ");
+}
+
+function display(mobs) {
+	var out = name(mobs[0]);
+	for (var i = 1; i < mobs.length; i++)
+		out += " x " + name(mobs[i]);
+	
+	document.getElementById("text").innerHTML = out;
+}
+</script>
+Click to generate.
+<h2 id="text"></h2>
+</body>
