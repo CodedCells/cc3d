@@ -25,6 +25,7 @@ btn.onchange = function () {
 	if (this.value)
 		loadScene(this.value)
 		window.location.hash = "#" + this.value;
+		sceneSelectDiv.style.display = "none";
 }
 
 btn.onclick = function () {
