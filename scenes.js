@@ -74,4 +74,5 @@ btnContainer.appendChild(sceneSelectDiv);
 
 if (window.location.hash.length < 2) {
 	sceneSelectDiv.style.display = "block";
+	loadScene("spin");
 }
