@@ -1,22 +1,12 @@
 var sceneFiles = {
-	"": "-- Select Scene --",
-	"jungleheatsky": "Jungle Heat",
-	"mawholes": "Maw Holes",
-	"fexmilking": "Fex Milking",
-	/*"unendinghorny": "Unending Horny",*/
-	"ticklishvibedwarden": "Ticklish Vibed Warden",
-	"chaltable": "Chal Table",
-	"trottrim": "Trot Trim"
-}
-var sceneThumb = {
-	"": "-- Select Scene --",
-	"jungleheatsky": "50696916@400-1674328260.jpg",
-	"mawholes": "46460766@400-1647990532.jpg",
-	"fexmilking": "50397423@400-1672272530.jpg",
-	/*"unendinghorny": "50841325@400-1675277508.jpg",*/
-	"ticklishvibedwarden": "50712717@400-1674425566.jpg",
-	"chaltable": "50360630@400-1672010351.jpg",
-	"trottrim": "50871958@400-1675470384.jpg"
+	"": {"name": "-- Select Scene --"},
+	"jungleheatsky": {"name": "Jungle Heat", "src": "JXu1J4t.jpg.jpg"},
+	"mawholes": {"name": "Maw Holes", "src": "CYAIDPZ.jpeg"},
+	"fexmilking": {"name": "Fex Milking", "src": "hG52BHr.jpg"},
+	/*"unendinghorny": {"name": "Unending Horny", "src": "irgfhO9.jpg"},*/
+	"ticklishvibedwarden": {"name": "Ticklish Vibed Warden", "src": "jZb3FZC.png"},
+	"chaltable": {"name": "Chal Table", "src": "GAxkiIZ.jpg"},
+	"trottrim": {"name": "Trot Trim", "src": "OlTr9i6.jpg"},
 }
 
 btnContainer = document.getElementById("scenebtn");
@@ -39,8 +29,9 @@ function loadSceneVis() {
 btn.label = "Select Scene";
 sceneSelectDiv.className = "sceneSelectVisualiser";
 
-for (const [sid, name] of Object.entries(sceneFiles)) {
-	//console.log(sid, name);
+for (const [sid, data] of Object.entries(sceneFiles)) {
+	//console.log(sid, data);
+	name = data.name;
 	opt = document.createElement('option');
 	opt.innerHTML = name;
 	opt.value = sid;
@@ -54,8 +45,8 @@ for (const [sid, name] of Object.entries(sceneFiles)) {
 	optVis.onclick = loadSceneVis;
 	optVisImg = document.createElement('img');
 	optVisImg.loading = "lazy";
-	if (sceneThumb[sid])
-		optVisImg.src = "https://t.furaffinity.net/" + sceneThumb[sid];
+	
+	optVisImg.src = "https://i.imgur.com/" + data.src;
 	
 	optVis.appendChild(optVisImg);
 	optVisTitle = document.createElement('span');
