@@ -20,16 +20,14 @@ var sceneThumb = {
 }
 
 btnContainer = document.getElementById("scenebtn");
+var sceneSelectDiv = document.createElement('div');
+
 const btn = document.createElement('select');
 btn.onchange = function () {
-	if (this.value)
-		loadScene(this.value)
+	if (this.value) {
+		loadScene(this.value);
 		window.location.hash = "#" + this.value;
-		sceneSelectDiv.style.display = "none";
-}
-
-btn.onclick = function () {
-	sceneSelectDiv.style.display = "block";
+	}
 }
 
 function loadSceneVis() {
@@ -39,7 +37,6 @@ function loadSceneVis() {
 }
 
 btn.label = "Select Scene";
-var sceneSelectDiv = document.createElement('div');
 sceneSelectDiv.className = "sceneSelectVisualiser";
 
 for (const [sid, name] of Object.entries(sceneFiles)) {
@@ -69,7 +66,8 @@ for (const [sid, name] of Object.entries(sceneFiles)) {
 btnContainer.appendChild(btn);
 
 info = document.createElement('span');
-info.innerHTML = " Click to Enter, Space to toggle camera, WASD to move freecam, R to reset.";
+info.innerHTML = " Click to Enter, ESC to unlock, SPACE to toggle camera, W/A/S/D to move freecam, R to reset. CLick here to open menu.";
+info.onclick = function () {sceneSelectDiv.style.display = "block";}
 btnContainer.appendChild(info);
 
 btnContainer.appendChild(sceneSelectDiv);
