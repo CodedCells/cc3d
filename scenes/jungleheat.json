@@ -2012,7 +2012,10 @@
 				"layers": 1,
 				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 				"geometry": "50082304-9526-4e5f-aff8-360c67e83260",
-				"material": "e92947ce-1af1-4004-b77a-4491fb18b8eb"
+				"material": "e92947ce-1af1-4004-b77a-4491fb18b8eb",
+				"userData": {
+					"doNotConvert": true
+				}
 			}]
 	}
 }

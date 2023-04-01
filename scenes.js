@@ -1,6 +1,6 @@
 var sceneFiles = {
 	"": {"name": "-- Select Scene --"},
-	"jungleheatsky": {"name": "Jungle Heat", "src": "JXu1J4t.jpg.jpg"},
+	"jungleheat": {"name": "Jungle Heat", "src": "JXu1J4t.jpg"},
 	"mawholes": {"name": "Maw Holes", "src": "CYAIDPZ.jpeg"},
 	"fexmilking": {"name": "Fex Milking", "src": "hG52BHr.jpg"},
 	/*"unendinghorny": {"name": "Unending Horny", "src": "irgfhO9.jpg"},*/

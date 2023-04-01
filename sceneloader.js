@@ -157,6 +157,30 @@ function importScene(data) {
 	camera = scene.children[0].children.find( child => child instanceof THREE.PerspectiveCamera );
 	activecam = camera;
 	
+	scene.traverse(function (object) {
+		if (!(object instanceof THREE.Mesh)) return;
+		if (object.userData.doNotConvert) return;
+		if (!(object.material.map)) return;
+		object.material.map.minFilter = THREE.NearestFilter;
+		object.material.map.magFilter = THREE.NearestFilter;
+		
+		// Convert material to MeshBasicMaterial type
+		object.material = new THREE.MeshLambertMaterial({
+			map: object.material.map,
+			color: object.material.color,
+			side: object.material.side,
+			alphaTest: object.material.alphaTest,
+			transparent: object.material.transparent,
+			emissive: object.material.emissive,
+			emissiveIntensity: object.material.emissiveIntensity,
+			emissiveMap: object.material.emissiveMap
+		});
+		
+		// Enable shadow casting and receiving
+		object.castShadow = true;
+		object.receiveShadow = true;
+	});
+	
 	mixer = new THREE.AnimationMixer(scene.children[0]);
 	clips = scene.children[0].animations;
 	console.log(clips);
