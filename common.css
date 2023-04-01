@@ -45,3 +45,24 @@ body {
 	color: #141414;
 	background: #EDD185;
 }
+
+.sceneSelectVisualiser {
+	display: none;
+	max-height: 90vh;
+	margin: 0 auto;
+	padding: 20px;
+	overflow-y: auto;
+}
+
+.sceneChoice {
+	display: inline-block;
+	vertical-align: top;
+	width: 30%;
+	max-width: 300px;
+	margin: 10px;
+	background: #191919;
+}
+
+.sceneChoice img {
+	width: 100%;
+}
