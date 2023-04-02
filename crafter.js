@@ -193,8 +193,8 @@ function isHexagonHovered(x, y, mouseX, mouseY, hi) {
 }
 
 function hexPos(col, row, width, height, gap) {
-	const x = col * (width + gap) + ((row % 2) * (width + gap)) / 2;
-	const y = (row * (1 + (gap / 100))) * (height * 3/4) + height / 4;
+	const x = gap + col * (width + gap) + ((row % 2) * (width + gap)) / 2;
+	const y = (row * (height * 3/4) + height / 4) + (row*gap);
 	return [x, y - height];
 }
 
