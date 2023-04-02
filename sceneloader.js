@@ -17,6 +17,8 @@ var lastTime;
 
 let forward = new THREE.Vector3();
 
+var play = true;
+
 function onResize () {
 	camera.aspect = window.innerWidth / window.innerHeight;
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -36,9 +38,8 @@ const lockChangeAlert = () => {
 
 const clickEvent = (event) => {
 	canvas.requestPointerLock = canvas.requestPointerLock || canvas.mozRequestPointerLock || canvas.webkitRequestPointerLock;
-	if (!isLocked) {
-		canvas.requestPointerLock();
-	}
+	if (isLocked) document.exitPointerLock();
+	else canvas.requestPointerLock();
 };
 
 let lookX = 0, lookY = 0;
@@ -100,7 +101,7 @@ function animate(now) {
 
 	if (ready) renderer.render( scene, activecam );
 	
-	if (mixer) mixer.update(elapsed / 1000);
+	if (mixer && play) mixer.update(elapsed / 1000);
 };
 
 function initial() {
@@ -205,6 +206,7 @@ function importScene(data) {
 	//scene.add(ambientLight);
 	
 	onResize();
+	updateControls(scene);
 }
 
 function loadScene(name) {
@@ -213,4 +215,7 @@ function loadScene(name) {
 	fetch("scenes/" + name + ".json")
 		.then((response) => response.json())
 		.then((json) => importScene(json));
+}
+
+function updateControls(scn) {
 }
