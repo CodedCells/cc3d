@@ -51,6 +51,12 @@ sceneSelectDiv.className = "sceneSelectVisualiser";
 
 for (const [sid, data] of Object.entries(sceneFiles)) {
 	//console.log(sid, data);
+	
+	optVis = document.createElement('div');
+	optVis.className = "sceneChoice";
+	if (data.disabled) continue;
+	//	optVis.className += " disabled";
+	
 	name = data.name;
 	opt = document.createElement('option');
 	opt.innerHTML = name;
@@ -59,10 +65,6 @@ for (const [sid, data] of Object.entries(sceneFiles)) {
 	
 	if (sid == "") continue;
 	
-	optVis = document.createElement('div');
-	optVis.className = "sceneChoice";
-	if (data.disabled) continue;
-	//	optVis.className += " disabled";
 	
 	optVis.id = sid;
 	optVis.onclick = loadSceneVis;
