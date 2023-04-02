@@ -66,3 +66,7 @@ body {
 .sceneChoice img {
 	width: 100%;
 }
+
+.sceneChoice.disabled img {
+	opacity: 0.25;
+}

@@ -3,10 +3,30 @@ var sceneFiles = {
 	"jungleheat": {"name": "Jungle Heat", "src": "JXu1J4t.jpg"},
 	"mawholes": {"name": "Maw Holes", "src": "CYAIDPZ.jpeg"},
 	"fexmilking": {"name": "Fex Milking", "src": "hG52BHr.jpg"},
-	/*"unendinghorny": {"name": "Unending Horny", "src": "irgfhO9.jpg"},*/
 	"ticklishvibedwarden": {"name": "Ticklish Vibed Warden", "src": "jZb3FZC.png"},
 	"chaltable": {"name": "Chal Table", "src": "GAxkiIZ.jpg"},
 	"trottrim": {"name": "Trot Trim", "src": "OlTr9i6.jpg"},
+	
+	"ossierailed": {"name": "Ossie Railed", "src": "giFZtIz.jpeg"},
+	"teamingtheenderdragon": {"name": "Teaming the Enderdragon", "src": "mIE9Ody.jpg", "disabled": true},
+	"ktchastity": {"name": "Chaste Chars", "src": "ub9Gabj.jpg", "disabled": true},
+	"kttoys": {"name": "Toyed Chars", "src": "kozJPXP.jpg", "disabled": true},
+	"llamadupe": {"name": "Llama Dupe", "src": "4BZkyQG.jpeg"},
+	"waxplay": {"name": "Wax Play", "src": "G6wu5IG.jpeg", "disabled": true},
+	"wolfpack": {"name": "Wolf Pack", "src": "kVJmpJE.jpg", "disabled": true},
+	"wolfdance": {"name": "Wolf Dance", "src": "CO67Sm9.jpeg", "disabled": true},
+	"pickyourpaws": {"name": "Pick your Paws", "src": "gjJlvti.jpeg", "disabled": true},
+	"zoglintesting": {"name": "Zoglin Testing", "src": "alNTN0h.jpg", "disabled": true},
+	"sofameme": {"name": "Sofa Meme", "src": "YK3GHtZ.jpeg"},
+	"muttonmosh": {"name": "Mutton Mosh", "src": "wl3XNXn.jpeg", "disabled": true},
+	"reflection": {"name": "Reflection", "src": "BCKZAhN.jpeg"},
+	"bambooawoo": {"name": "Bamboo Awoo", "src": "64Rg3lf.jpg", "disabled": true},
+	"dorimedive": {"name": "Dorime Dive", "src": "F37136d.jpg", "disabled": true},
+	"brushbutts": {"name": "Brush Butts", "src": "saCIk3n.jpg", "disabled": true},
+	"wallbound": {"name": "Wall Bound", "src": "GGhNSEm.jpg", "disabled": true},
+	"bigpawworship": {"name": "Big Paw Worship", "src": "v4W8lZY.jpg", "disabled": true},
+	
+	/*"unendinghorny": {"name": "Unending Horny", "src": "irgfhO9.jpg"},*/
 }
 
 btnContainer = document.getElementById("scenebtn");
@@ -41,6 +61,9 @@ for (const [sid, data] of Object.entries(sceneFiles)) {
 	
 	optVis = document.createElement('div');
 	optVis.className = "sceneChoice";
+	if (data.disabled) continue;
+	//	optVis.className += " disabled";
+	
 	optVis.id = sid;
 	optVis.onclick = loadSceneVis;
 	optVisImg = document.createElement('img');
