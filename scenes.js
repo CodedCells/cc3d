@@ -41,6 +41,10 @@ btn.onchange = function () {
 }
 
 function loadSceneVis() {
+	if (this.id == "crafter") {
+		window.location.pathname = "/cc3d/crafter_ui.html";
+		return;
+	}
 	sceneSelectDiv.style.display = "none";
 	loadScene(this.id);
 	window.location.hash = "#" + this.id;
@@ -49,7 +53,7 @@ function loadSceneVis() {
 btn.label = "Select Scene";
 sceneSelectDiv.className = "sceneSelectVisualiser";
 
-for (const [sid, data] of Object.entries(sceneFiles)) {
+for ([sid, data] of Object.entries(sceneFiles)) {
 	//console.log(sid, data);
 	
 	optVis = document.createElement('div');
@@ -63,15 +67,19 @@ for (const [sid, data] of Object.entries(sceneFiles)) {
 	opt.value = sid;
 	btn.appendChild(opt);
 	
-	if (sid == "") continue;
-	
+	src = data.src;
+	if (sid == "") {
+		sid = "crafter";
+		name = "Crafter! (Intreactive choice)";
+		src = "Preblmy.png";
+	}
 	
 	optVis.id = sid;
 	optVis.onclick = loadSceneVis;
 	optVisImg = document.createElement('img');
 	optVisImg.loading = "lazy";
 	
-	optVisImg.src = "https://i.imgur.com/" + data.src;
+	optVisImg.src = "https://i.imgur.com/" + src;
 	
 	optVis.appendChild(optVisImg);
 	optVisTitle = document.createElement('span');

@@ -2624,7 +2624,7 @@
 			"blendMode": 2500
 		},
 		{
-			"name": "bottom_wolf__rigAction",
+			"name": "bottom_wolf_rigAction",
 			"duration": 2.0333333015441895,
 			"tracks": [
 				{
@@ -3365,7 +3365,7 @@
 			"blendMode": 2500
 		},
 		{
-			"name": "top_wolf__rigAction",
+			"name": "top_wolf_rigAction",
 			"duration": 2.0333333015441895,
 			"tracks": [
 				{
@@ -3588,7 +3588,7 @@
 			"blendMode": 2500
 		},
 		{
-			"name": "top_cat-rigAction",
+			"name": "top_cat_rigAction",
 			"duration": 2.0333333015441895,
 			"tracks": [
 				{
@@ -4886,9 +4886,9 @@
 					{
 						"uuid": "3949c94a-369c-48f0-a7e6-b7c9a6c98eea",
 						"type": "Object3D",
-						"name": "bottom_wolf__rig",
+						"name": "bottom_wolf_rig",
 						"userData": {
-							"name": "bottom_wolf__rig"
+							"name": "bottom_wolf_rig"
 						},
 						"layers": 1,
 						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,-1,0.800000011920929,1],
@@ -5505,9 +5505,9 @@
 					{
 						"uuid": "ee632f07-776f-488d-8abe-b68fb91a545e",
 						"type": "Object3D",
-						"name": "top_wolf__rig",
+						"name": "top_wolf_rig",
 						"userData": {
-							"name": "top_wolf__rig"
+							"name": "top_wolf_rig"
 						},
 						"layers": 1,
 						"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,-0.7999999523162842,-0.20000001788139343,1],
@@ -5681,9 +5681,9 @@
 					{
 						"uuid": "fa145713-79af-4367-bc74-db0a101793e5",
 						"type": "Object3D",
-						"name": "top_cat-rig",
+						"name": "top_cat_rig",
 						"userData": {
-							"name": "top_cat-rig"
+							"name": "top_cat_rig"
 						},
 						"layers": 1,
 						"matrix": [0.8999999761581421,0,0,0,0,0.8999999761581421,0,0,0,0,0.8999999761581421,0,0,-0.6000003814697266,-0.10000000149011612,1],
@@ -6578,7 +6578,7 @@
 				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
 				"up": [0,1,0],
 				"color": 14804724,
-				"intensity": 0.3
+				"intensity": 0.4
 			},
 			{
 				"uuid": "21632ad6-0499-442c-b1f6-efa3d02c93e7",
@@ -6589,7 +6589,7 @@
 				"matrix": [1,0,0,0,0,1,0,0,0,0,1,0,5,10,7.5,1],
 				"up": [0,1,0],
 				"color": 16773099,
-				"intensity": 0.7,
+				"intensity": 1,
 				"shadow": {
 					"camera": {
 						"uuid": "373b4832-cade-4800-a9de-83260f5fd9ae",
