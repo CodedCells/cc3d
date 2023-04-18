@@ -122,6 +122,7 @@ function basicScene() {
 	activecam = camera;
 
 	renderer = new THREE.WebGLRenderer({ antialias: true });
+	renderer.outputEncoding = THREE.sRGBEncoding;
 	renderer.setSize( window.innerWidth, window.innerHeight );
 	canvas = renderer.domElement;
 	document.body.appendChild( canvas );
