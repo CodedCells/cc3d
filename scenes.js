@@ -7,6 +7,8 @@ var sceneFiles = {
 	"chaltable": {"name": "Chal Table", "src": "GAxkiIZ.jpg"},
 	"trottrim": {"name": "Trot Trim", "src": "OlTr9i6.jpg"},
 	
+	"bigbandet": {"name": "Big Bandet", "src": "tddKPl8.jpg"},
+	
 	"ossierailed": {"name": "Ossie Railed", "src": "giFZtIz.jpeg"},
 	"teamingtheenderdragon": {"name": "Teaming the Enderdragon", "src": "mIE9Ody.jpg", "disabled": true},
 	"ktchastity": {"name": "Chaste Chars", "src": "ub9Gabj.jpg", "disabled": true},
