@@ -27,7 +27,7 @@ var sceneFiles = {
 	"brushbutts": {"name": "Brush Butts", "src": "saCIk3n.jpg", "disabled": true},
 	"wallbound": {"name": "Wall Bound", "src": "GGhNSEm.jpg", "disabled": true},
 	"bigpawworship": {"name": "Big Paw Worship", "src": "v4W8lZY.jpg", "disabled": true},
-	
+	"gimpfin": {"name": "Gimpfin", "src": "SyU1W2C.jpg"},
 	/*"unendinghorny": {"name": "Unending Horny", "src": "irgfhO9.jpg"},*/
 }
 
