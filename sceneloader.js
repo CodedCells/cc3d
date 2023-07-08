@@ -10,6 +10,8 @@ var sphere;
 var mixer;
 var clips;
 
+var defaultScene;
+
 var cameraPos = new THREE.Vector3();
 var cameraRot = new THREE.Vector3();
 
@@ -113,6 +115,8 @@ function initial() {
 		const params = Object.fromEntries(new URLSearchParams(query))
 		
 		loadScene(hash);
+	} else if (defaultScene != null) {
+		loadScene(defaultScene)
 	}
 }
 
