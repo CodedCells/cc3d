@@ -9,16 +9,22 @@
 		<div class="overbtn" style="display:none" id="scenebtn"></div>
 		<div id="loader" style="display: none;">Loading</div>
 		<div class="check">
-		<h1>Are you over 18?</h1>
+		<div class="check-inner">
+		<h1>CodedCells' Scene Loader</h1>
+		<p>This website contains material suitable only for Adults, <br>to continue please answer truthfully.</p>
+		<h2>Are you over 18?</h2>
 		<button onclick="safetypass()">Yes</button>
 		<button onclick="window.location = 'https://www.rfc-editor.org/rfc/rfc2324';">No</button>
 		</div>
+		</div>
 		<script src="https://threejs.org/build/three.js"></script>
 		<script>
+		var defaultScene = "spin";
 function safetypass() {
 	script = document.createElement('script');
 	script.async = true;
 	script.src = "scenes.js";
+	
 	document.body.appendChild(script);
 	document.getElementsByClassName("overbtn")[0].style = "";
 	document.getElementsByClassName("check")[0].style.display = "none";
