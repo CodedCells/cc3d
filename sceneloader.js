@@ -185,8 +185,8 @@ function importScene(data) {
 	
 	mixer = new THREE.AnimationMixer(scene.children[0]);
 	clips = scene.children[0].animations;
-	console.log(clips);
-	console.log(clips.length);
+	//console.log(clips);
+	//console.log(clips.length);
 	
 	clips.forEach( function ( clip ) {
 		mixer.clipAction( clip ).play();
