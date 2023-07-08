@@ -81,6 +81,8 @@ for ([sid, data] of Object.entries(sceneFiles)) {
 	optVis.id = sid;
 	optVis.onclick = loadSceneVis;
 	optVisImg = document.createElement('img');
+	optVisImg.width = 300;
+	optVisImg.height = 225;
 	optVisImg.loading = "lazy";
 	
 	optVisImg.src = "https://i.imgur.com/" + src;
