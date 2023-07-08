@@ -23,7 +23,7 @@
 function safetypass() {
 	script = document.createElement('script');
 	script.async = true;
-	script.src = "scenes.js";
+	script.src = "scenes.js?v="+Math.random();
 	
 	document.body.appendChild(script);
 	document.getElementsByClassName("overbtn")[0].style = "";
@@ -31,7 +31,7 @@ function safetypass() {
 	
 	script = document.createElement('script');
 	script.async = true;
-	script.src = "sceneloader.js";
+	script.src = "sceneloader.js?v="+Math.random();
 	document.body.appendChild(script);
 }
 	</script>
