@@ -95,7 +95,12 @@ btnContainer.appendChild(btn);
 
 info = document.createElement('span');
 info.innerHTML = " Click to Enter, ESC to unlock, SPACE to toggle camera, W/A/S/D to move freecam, R to reset. CLick here to open menu.";
-info.onclick = function () {sceneSelectDiv.style.display = "block";}
+info.onclick = function () {
+	var d = sceneSelectDiv.style.display;
+	if (d == "none") d = "block";
+	else d = "none";
+	sceneSelectDiv.style.display = d;
+}
 btnContainer.appendChild(info);
 
 btnContainer.appendChild(sceneSelectDiv);
