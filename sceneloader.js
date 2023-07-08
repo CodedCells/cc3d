@@ -10,10 +10,11 @@ var sphere;
 var mixer;
 var clips;
 
-var defaultScene;
+var currentSceneName;
 
-var cameraPos = new THREE.Vector3();
-var cameraRot = new THREE.Vector3();
+var speed = 1;
+
+var defaultScene;
 
 var lastTime;
 
@@ -68,12 +69,25 @@ var freecam = false;
 var activecam = camera;
 
 function onDocumentKeyDown(event) {
-	heldKeys[event.code] = true;
-	if (event.code == "KeyR") {
-		activecam.position.copy(cameraPos);
-		activecam.quaternion.copy(cameraRot);
+	if (heldKeys[event.code]) {
+		return;
 	}
-	if (event.code == "Space") {
+	heldKeys[event.code] = true;
+	
+	if (event.code == "Backspace") {
+		// reload the scene
+		loadScene(currentSceneName);
+	}
+	else if (event.code == "ShiftLeft") {
+		// increase movement speed
+		speed = 5;
+	}
+	else if (event.code == "KeyP") {
+		play = !play;
+	}
+	
+	else if (event.code == "Space") {
+		// toggle active camera
 		freecam = !(freecam);
 		if (freecam) activecam = fpscamera;
 		else activecam = camera;
@@ -82,6 +96,10 @@ function onDocumentKeyDown(event) {
 
 function onDocumentKeyUp(event) {
 	heldKeys[event.code] = false;
+	if (event.code == "ShiftLeft") {
+		// revert to default movement speed
+		speed = 1;
+	}
 }
 
 document.addEventListener('keydown', onDocumentKeyDown, false);
@@ -96,10 +114,10 @@ function animate(now) {
 	lastTime = now;
 	
 	forward.set(0, 0, -1).applyQuaternion(activecam.quaternion);
-	if (heldKeys.KeyW) activecam.position.add(forward.multiplyScalar(0.1));
-	if (heldKeys.KeyS) activecam.position.sub(forward.multiplyScalar(0.1));
-	if (heldKeys.KeyA) activecam.position.sub(forward.cross(camera.up).normalize().multiplyScalar(0.1));
-	if (heldKeys.KeyD) activecam.position.add(forward.cross(camera.up).normalize().multiplyScalar(0.1));
+	if (heldKeys.KeyW) activecam.position.add(forward.multiplyScalar(speed/10));
+	if (heldKeys.KeyS) activecam.position.sub(forward.multiplyScalar(speed/10));
+	if (heldKeys.KeyA) activecam.position.sub(forward.cross(camera.up).normalize().multiplyScalar(speed/10));
+	if (heldKeys.KeyD) activecam.position.add(forward.cross(camera.up).normalize().multiplyScalar(speed/10));
 
 	if (ready) renderer.render( scene, activecam );
 	
@@ -145,6 +163,7 @@ document.addEventListener('mozpointerlockchange', lockChangeAlert, false);
 document.addEventListener('webkitpointerlockchange', lockChangeAlert, false);
 
 function onDocumentMouseWheel(event) {
+	if (!isLocked) {return};
 	activecam.fov += event.deltaY * 0.01;
 	activecam.fov = Math.min(Math.max(activecam.fov, 1), 179)
 	activecam.updateProjectionMatrix();
@@ -195,8 +214,7 @@ function importScene(data) {
 	clips.forEach( function ( clip ) {
 		mixer.clipAction( clip ).play();
 	} );
-	cameraPos.copy(camera.position);
-	cameraRot.copy(camera.quaternion);
+	
 	fpscamera.position.copy(camera.position);
 	fpscamera.quaternion.copy(camera.quaternion);
 	
@@ -215,6 +233,7 @@ function importScene(data) {
 }
 
 function loadScene(name) {
+	currentSceneName = name;
 	loader.style.display = "initial";
 	
 	fetch("scenes/" + name + ".json")
