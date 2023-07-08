@@ -1,3 +1,5 @@
+var defaultScene = "spin";
+
 var sceneFiles = {
 	"": {"name": "-- Select Scene --"},
 	"jungleheat": {"name": "Jungle Heat", "src": "JXu1J4t.jpg"},
@@ -100,5 +102,4 @@ btnContainer.appendChild(sceneSelectDiv);
 
 if (window.location.hash.length < 2) {
 	sceneSelectDiv.style.display = "block";
-	loadScene("spin");
 }
