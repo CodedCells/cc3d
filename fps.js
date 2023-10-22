@@ -113,7 +113,9 @@ document.addEventListener( 'keydown', ( event ) => {
 	keyStates[ event.code ] = true;
 	if (event.shiftKey)
 		event.preventDefault();
-
+	
+	if (event.code == "KeyV")
+		noclip = !noclip;
 } );
 
 document.addEventListener( 'keyup', ( event ) => {
@@ -353,7 +355,7 @@ function getSideVector() {
 function controls( deltaTime ) {
 
 	// gives a bit of air control
-	const speedDelta = deltaTime * ( playerOnFloor ? 25 : 8 );
+	const speedDelta = deltaTime * ( playerOnFloor || noclip ? 25 : 8 );
 
 	if ( keyStates[ 'KeyW' ] ) {
 
@@ -379,7 +381,7 @@ function controls( deltaTime ) {
 
 	}
 
-	if ( playerOnFloor ) {
+	if ( playerOnFloor || noclip ) {
 
 		if ( keyStates[ 'Space' ] ) {
 			playerVelocity.y = 8;
