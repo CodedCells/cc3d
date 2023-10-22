@@ -425,19 +425,15 @@ loader.load( 'biglab.glb', ( gltf ) => {
 	const gui = new GUI( { width: 200 } );
 	gui.add( { debug: false }, 'debug' )
 		.onChange( function ( value ) {
-
 			helper.visible = value;
-
 		} );
+	
 	gui.add( { noclip: false }, 'noclip' )
 		.onChange( function ( value ) {
-
 			noclip = value;
-
 		} );
 
 	animate();
-
 } );
 
 function teleportPlayerIfOob() {
