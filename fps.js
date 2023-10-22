@@ -56,6 +56,7 @@ stats.domElement.style.top = '0px';
 container.appendChild( stats.domElement );
 
 const GRAVITY = 30;
+var noclip = false;
 
 const NUM_SPHERES = 2;
 const SPHERE_RADIUS = 0.0625;
@@ -110,6 +111,8 @@ const vector3 = new THREE.Vector3();
 document.addEventListener( 'keydown', ( event ) => {
 
 	keyStates[ event.code ] = true;
+	if (event.shiftKey)
+		event.preventDefault();
 
 } );
 
@@ -200,7 +203,7 @@ function updatePlayer( deltaTime ) {
 
 	let damping = Math.exp( - 4 * deltaTime ) - 1;
 
-	if ( ! playerOnFloor ) {
+	if ( ! playerOnFloor && !noclip ) {
 
 		playerVelocity.y -= GRAVITY * deltaTime;
 
@@ -213,8 +216,9 @@ function updatePlayer( deltaTime ) {
 
 	const deltaPosition = playerVelocity.clone().multiplyScalar( deltaTime );
 	playerCollider.translate( deltaPosition );
-
-	playerCollisions();
+	
+	if (!noclip)
+		playerCollisions();
 
 	camera.position.copy( playerCollider.end ).add(new THREE.Vector3(0, -.2, 0));
 
@@ -378,9 +382,10 @@ function controls( deltaTime ) {
 	if ( playerOnFloor ) {
 
 		if ( keyStates[ 'Space' ] ) {
-
 			playerVelocity.y = 8;
-
+		}
+		if ( (keyStates[ 'ShiftLeft' ] || keyStates[ 'ShiftRight' ]) && noclip ) {
+			playerVelocity.y = -8;
 		}
 
 	}
@@ -422,6 +427,12 @@ loader.load( 'biglab.glb', ( gltf ) => {
 		.onChange( function ( value ) {
 
 			helper.visible = value;
+
+		} );
+	gui.add( { noclip: false }, 'noclip' )
+		.onChange( function ( value ) {
+
+			noclip = value;
 
 		} );
 
