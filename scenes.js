@@ -96,7 +96,7 @@ for ([sid, data] of Object.entries(sceneFiles)) {
 btnContainer.appendChild(btn);
 
 info = document.createElement('span');
-info.innerHTML = " CLick here to open menu. Click view to move, ESC to unlock, SPACE to toggle camera, W/A/S/D to move freecam, Backspace to reset.";
+info.innerHTML = " Click here to open menu. Click view to move, ESC to unlock, SPACE to toggle camera, W/A/S/D to move freecam, Backspace to reset.";
 info.onclick = function () {
 	var d = sceneSelectDiv.style.display;
 	if (d == "none") d = "block";
