@@ -36,7 +36,9 @@ function presentLinks() {
 		"dragonbinds": "Dragon Binds.",
 		"kingdogz": "Kingdogz.",
 		"mawholes": "Maw Holes",
-		"labfins": "Musky Sauna Dolphins."
+		"labfins": "Musky Sauna Dolphins.",
+		"trotttrim": "Trott Trim",
+		"sofameme": "Sofa Meme"
 	};
 	
 	const divTitle = document.createElement('h2');
@@ -140,6 +142,23 @@ function loadScene(fn) {
 		
 		var orbitObject = model.getObjectByName("@orbit");
 		if (orbitObject) {
+			console.log(orbitObject.userData);
+			if (orbitObject.userData.ambientLight) {
+				var ambientLightColor = new THREE.Color("#" + orbitObject.userData.ambientLight);
+				var ambientLight = new THREE.AmbientLight(ambientLightColor, 0.8);
+				scene.add(ambientLight);
+			}
+			if (orbitObject.userData.sky) {
+				var skyTextureName = "skies/" + orbitObject.userData.sky + ".jpg";
+				var textureLoader = new THREE.TextureLoader();
+				var skyTexture = textureLoader.load(skyTextureName);
+				skyTexture.colorSpace = THREE.SRGBColorSpace;
+				console.log(skyTexture);
+				skyTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+				scene.background = skyTexture;
+			}
+		
 			orbitObject = orbitObject.position;
 			controls.target.set( orbitObject.x, orbitObject.y, orbitObject.z );
 		}
