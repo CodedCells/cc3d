@@ -1,7 +1,8 @@
 var defaultScene = "spin";
 
 var sceneFiles = {
-	"": {"name": "-- Select Scene --"},
+	"@crafter": {"name": "Crafter! (Intreactive choice)", "src": "Preblmy.jpg"},
+	"@new": {"name": "New Viewer (Beta)", "src": "OgjbCHQ.jpg"},
 	"jungleheat": {"name": "Jungle Heat", "src": "JXu1J4t.jpg"},
 	"mawholes": {"name": "Maw Holes", "src": "CYAIDPZ.jpeg"},
 	"fexmilking": {"name": "Fex Milking", "src": "hG52BHr.jpg"},
@@ -45,8 +46,12 @@ btn.onchange = function () {
 }
 
 function loadSceneVis() {
-	if (this.id == "crafter") {
+	if (this.id == "@crafter") {
 		window.location.pathname = "/cc3d/crafter_ui.html";
+		return;
+	}
+	if (this.id == "@new") {
+		window.location.pathname = "/cc3d/new/cc3d.html";
 		return;
 	}
 	sceneSelectDiv.style.display = "none";
@@ -57,6 +62,11 @@ function loadSceneVis() {
 btn.label = "Select Scene";
 sceneSelectDiv.className = "sceneSelectVisualiser";
 
+opt = document.createElement('option');
+opt.innerHTML = "-- Select Scene --";
+opt.value = "";
+btn.appendChild(opt);
+
 for ([sid, data] of Object.entries(sceneFiles)) {
 	//console.log(sid, data);
 	
@@ -66,16 +76,11 @@ for ([sid, data] of Object.entries(sceneFiles)) {
 	//	optVis.className += " disabled";
 	
 	name = data.name;
-	opt = document.createElement('option');
-	opt.innerHTML = name;
-	opt.value = sid;
-	btn.appendChild(opt);
-	
-	src = data.src;
-	if (sid == "") {
-		sid = "crafter";
-		name = "Crafter! (Intreactive choice)";
-		src = "Preblmy.png";
+	if (!sid.startsWith("@")) {
+		opt = document.createElement('option');
+		opt.innerHTML = name;
+		opt.value = sid;
+		btn.appendChild(opt);
 	}
 	
 	optVis.id = sid;
@@ -85,7 +90,7 @@ for ([sid, data] of Object.entries(sceneFiles)) {
 	optVisImg.height = 225;
 	optVisImg.loading = "lazy";
 	
-	optVisImg.src = "https://i.imgur.com/" + src;
+	optVisImg.src = "https://i.imgur.com/" + data.src;
 	
 	optVis.appendChild(optVisImg);
 	optVisTitle = document.createElement('span');
