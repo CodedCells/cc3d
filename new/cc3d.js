@@ -36,6 +36,7 @@ function presentLinks() {
 		"dragonbinds": "Dragon Binds.",
 		"kingdogz": "Kingdogz.",
 		"mawholes": "Maw Holes",
+		"labfins": "Musky Sauna Dolphins."
 	};
 	
 	const divTitle = document.createElement('h2');
