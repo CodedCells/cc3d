@@ -31,7 +31,9 @@ function presentLinks() {
 		"ticklishvibedwarden": "Ticklish Vibed Warden",
 		"chaltable": "Chal Table",
 		"gimpfin": "Gimpfin",
-		"bestowstrapona": "Bestow Strapon"
+		"bestowstrapona": "Bestow Strapon",
+		"fexicebla": "Icee Huffy",
+		"dragonbinds": "Dragon Binds"
 	};
 	
 	const divTitle = document.createElement('h2');
