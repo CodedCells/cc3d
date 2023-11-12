@@ -1,0 +1,104 @@
+body {
+	margin: 0;
+	background: #000000;
+	color: #E8E8E8;
+	font-family: sans-serif;
+}
+.overbtn {
+	display: block;
+	position: fixed;
+	z-index: 99999;
+}
+#loader {
+	display: block;
+	position: fixed;
+	bottom: 0;
+	padding: 5px;
+	background: #000000;
+	z-index: 5555;
+	width: 100vw;
+	text-align: center;
+	vertical-align: bottom;
+}
+.check {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100vw;
+	height: 100vh;
+	position: fixed;
+	z-index: 99999;
+	backdrop-filter: blur(5px);
+}
+
+.check-inner {
+	text-align: center;
+	padding: 10px;
+	background-color: rgba(38, 38, 38, .6);
+	backdrop-filter: blur(3px);
+	border: 5px solid #000000;
+	border-radius: 25px;
+	user-select: none;
+}
+.check p {
+	font-size: 120%;
+	color: #f06060;
+}
+.check h1 {
+	font-weight: 100;
+	font-size: 250%;
+	margin: 0;
+}
+.check h2 {
+	font-weight: 100;
+	font-size: 200%;
+}
+.check button {
+	margin: 0 10px;
+	border: none;
+	padding: 5px;
+	width: 10%;
+	min-width: 120px;
+	font-size: 150%;
+	border-radius: 50px;
+	color: #141414;
+	background: #EDD185;
+}
+
+.sceneSelectVisualiser {
+	display: none;
+	max-height: 90vh;
+	margin: 0 auto;
+	padding: 20px;
+	overflow-y: auto;
+	text-align: center;
+}
+
+.sceneChoice {
+	display: inline-block;
+	vertical-align: top;
+	width: 30%;
+	max-width: 300px;
+	margin: 10px;
+	background: #191919;
+	font-size: 120%;
+}
+
+.sceneChoice img {
+	width: 100%;
+}
+
+.sceneChoice.disabled img {
+	opacity: 0.25;
+}
+
+#sceneMenu {
+	background: #000;
+	opacity: 25%;
+	display: inline-block;
+	position: fixed;
+	z-index: 34;
+	line-height: 150%;
+	font-size: 150%;
+	padding: 0.5em;;
+}
