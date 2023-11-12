@@ -93,12 +93,43 @@ body {
 }
 
 #sceneMenu {
-	background: #000;
-	opacity: 25%;
+	background: rgb(0 0 0, 0.25);
 	display: inline-block;
 	position: fixed;
 	z-index: 34;
 	line-height: 150%;
 	font-size: 150%;
-	padding: 0.5em;;
+	padding: 0.5em;
+	max-height: 100vh;
+}
+
+.menuOption {
+	display: table;
+	opacity: 0.6;
+}
+
+.menuOption:hover {
+	color: #EDD185;
+	opacity: 1;
+}
+
+@keyframes sparkle {
+	0% { opacity: 1; transform: scale(1); }
+	100% { opacity: 0.3; transform: scale(1.2); }
+}
+
+.anim-icon {
+	display: inline-block;
+	font-size: 24px;
+	position: relative;
+	color: transparent;
+	width: 20px;
+}
+
+.anim-icon::before {
+	content: "\2605"; /* Unicode star character */
+	color: #ffdb58; /* You can adjust the color */
+	position: relative;
+	top: -2px;
+	animation: sparkle 3s infinite alternate; /* Adjust the animation duration as needed */
 }

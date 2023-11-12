@@ -44,11 +44,17 @@ function presentLinks() {
 		
 		const optVis = document.createElement('div');
 		
+		optVis.className = "menuOption";
 		optVis.id = sid;
 		optVis.onclick = reload;
 		
 		const optVisTitle = document.createElement('span');
-		optVisTitle.innerHTML = name;
+		if (name.endsWith('.')) {
+			name = name.substring(0, name.length - 1);
+			optVisTitle.innerHTML += '<span class="anim-icon">ANIMATED</span> ';
+		}
+		optVisTitle.innerHTML += name;
+		
 		optVis.appendChild(optVisTitle);
 		sceneSelectDiv.appendChild(optVis);
 	}
@@ -61,6 +67,7 @@ function presentBack() {
 	
 	const optVis = document.createElement('div');
 	
+	optVis.className = "menuOption";
 	optVis.id = "";
 	optVis.onclick = reload;
 	
@@ -84,8 +91,6 @@ function init() {
 	renderer.toneMappingExposure = 1;
 	container.appendChild( renderer.domElement );
 	
-	//loadScene('gimpfin.glb')
-	//loadScene('fexmilking.glb')
 	var loadThis = 'spin';
 	if (window.location.hash) {
 		loadThis = window.location.hash.substr(1);
