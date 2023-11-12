@@ -101,6 +101,7 @@ body {
 	font-size: 150%;
 	padding: 0.5em;
 	max-height: 100vh;
+	overflow: auto;
 }
 
 .menuOption {
