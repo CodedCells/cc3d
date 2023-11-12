@@ -43,8 +43,9 @@ function presentLinks() {
 	};
 	
 	const divTitle = document.createElement('h2');
-	divTitle.innerHTML = "Temporary Menu";
+	divTitle.innerHTML = "Scene Loader Beta";
 	sceneSelectDiv.appendChild(divTitle);
+	sceneSelectDiv.innerHTML += '<span class="blah">Star icon = animation</span>';
 	
 	for (var [sid, name] of Object.entries(sceneFiles)) {
 		

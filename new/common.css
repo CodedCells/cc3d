@@ -134,3 +134,13 @@ body {
 	top: -2px;
 	animation: sparkle 3s infinite alternate; /* Adjust the animation duration as needed */
 }
+
+.blah {
+	line-height: inital;
+	font-size: initial;
+	margin: 10pt;
+}
+
+h2 {
+	margin-bottom: 0;
+}
