@@ -124,7 +124,7 @@ function loadScene(fn) {
 			if (obj.isMesh) {
 				obj.renderOrder = 0; // Set render order
 				obj.material.depthWrite = true; // Enable depth writing for the material
-				obj.material.alphaTest = true;
+				obj.material.alphaTest = 0.1;
 			}
 		});
 		
