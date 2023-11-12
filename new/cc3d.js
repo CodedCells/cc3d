@@ -38,7 +38,8 @@ function presentLinks() {
 		"mawholes": "Maw Holes",
 		"labfins": "Musky Sauna Dolphins.",
 		"trotttrim": "Trott Trim",
-		"sofameme": "Sofa Meme"
+		"sofameme": "Sofa Meme",
+		"llamadupe": "Llama Dupe"
 	};
 	
 	const divTitle = document.createElement('h2');
