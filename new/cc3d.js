@@ -27,13 +27,15 @@ function presentLinks() {
 	
 	var sceneFiles = {
 		"jungleheat": "Jungle Heat",
-		"fexmilking": "Fex Milking",
-		"ticklishvibedwarden": "Ticklish Vibed Warden",
+		"fexmilking": "Fex Milking.",
+		"ticklishvibedwarden": "Ticklish Vibed Warden.",
 		"chaltable": "Chal Table",
-		"gimpfin": "Gimpfin",
-		"bestowstrapona": "Bestow Strapon",
+		"gimpfin": "Gimpfin.",
+		"bestowstrapona": "Bestow Strapon.",
 		"fexicebla": "Icee Huffy",
-		"dragonbinds": "Dragon Binds"
+		"dragonbinds": "Dragon Binds.",
+		"kingdogz": "Kingdogz.",
+		"mawholes": "Maw Holes",
 	};
 	
 	const divTitle = document.createElement('h2');
