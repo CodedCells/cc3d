@@ -39,7 +39,10 @@ function presentLinks() {
 		"labfins": "Musky Sauna Dolphins.",
 		"trotttrim": "Trott Trim",
 		"sofameme": "Sofa Meme",
-		"llamadupe": "Llama Dupe"
+		"llamadupe": "Llama Dupe",
+		"bigbandet": "Big Bandet",
+		"reflectionflip": "Reflection",
+		"ossierailed": "Ossie Railed"
 	};
 	
 	const divTitle = document.createElement('h2');
