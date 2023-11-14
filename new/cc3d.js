@@ -42,7 +42,8 @@ function presentLinks() {
 		"llamadupe": "Llama Dupe",
 		"bigbandet": "Big Bandet",
 		"reflectionflip": "Reflection",
-		"ossierailed": "Ossie Railed"
+		"ossierailed": "Ossie Railed",
+		"dorimedive": "Dorime Dive"
 	};
 	
 	const divTitle = document.createElement('h2');
