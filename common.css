@@ -77,7 +77,6 @@ body {
 .sceneChoice {
 	display: inline-block;
 	vertical-align: top;
-	width: 30%;
 	max-width: 300px;
 	margin: 10px;
 	background: #191919;
