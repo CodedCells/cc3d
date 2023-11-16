@@ -17,8 +17,12 @@ init();
 
 function reload() {
 	// Reload the page
-	window.location.hash = this.id;
-	window.location.reload();
+	var query = this.id;
+	window.location.hash = "";
+	if (query)
+		query = "?s=" + query;
+	
+	window.location.search = query;
 }
 
 function presentLinks() {
@@ -104,12 +108,21 @@ function init() {
 	renderer.toneMappingExposure = 1;
 	container.appendChild( renderer.domElement );
 	
-	var loadThis = 'spin';
-	if (window.location.hash) {
+	var loadThis;
+	
+	if (window.location.search) {
+		loadThis = window.location.search.substr(3);
+		presentBack()
+	}
+	else if (window.location.hash) {
 		loadThis = window.location.hash.substr(1);
 		presentBack()
-	} else
+	} 
+	
+	if (!loadThis) {
+		loadThis = 'spin'
 		presentLinks()
+	}
 	
 	loadScene(loadThis + '.glb')
 	
