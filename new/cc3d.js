@@ -24,6 +24,7 @@ function reload() {
 function presentLinks() {
 	const sceneMenu = document.getElementById("sceneMenu");
 	const sceneSelectDiv = document.createElement('div');
+	sceneMenu.className = "menuMain";
 	
 	var sceneFiles = {
 		"jungleheat": "Jungle Heat",
@@ -75,6 +76,7 @@ function presentLinks() {
 function presentBack() {
 	const sceneMenu = document.getElementById("sceneMenu");
 	const sceneSelectDiv = document.createElement('div');
+	sceneMenu.className = "menuBack";
 	
 	const optVis = document.createElement('div');
 	
