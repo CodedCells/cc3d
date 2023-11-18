@@ -158,6 +158,9 @@ function loadScene(fn) {
 				obj.renderOrder = 0; // Set render order
 				obj.material.depthWrite = true; // Enable depth writing for the material
 				obj.material.alphaTest = 0.05;
+				
+				if (obj.material.map)
+					obj.material.map.minFilter = THREE.LinearFilter;
 			}
 		});
 		
