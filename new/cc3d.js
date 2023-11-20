@@ -48,7 +48,8 @@ function presentLinks() {
 		"bigbandet": "Big Bandet",
 		"reflectionflip": "Reflection",
 		"ossierailed": "Ossie Railed",
-		"dorimedive": "Dorime Dive"
+		"dorimedive": "Dorime Dive",
+		"zombiestrongfisha": "Stronghold Silverfish x Zombie."
 	};
 	
 	const divTitle = document.createElement('h2');
