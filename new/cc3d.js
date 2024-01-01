@@ -52,7 +52,8 @@ function presentLinks() {
 		"servicepets": "Service Pets",
 		"encore2021": "Encore 2021",
 		"zombiestrongfisha": "Stronghold Silverfish x Zombie.",
-		"dragonsit": "Dragon Sit"
+		"dragonsit": "Dragon Sit",
+		"feathervexa": "Feather Vex."
 	};
 	
 	const divTitle = document.createElement('h2');
