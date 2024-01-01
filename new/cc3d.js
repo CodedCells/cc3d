@@ -48,6 +48,7 @@ function presentLinks() {
 		"llamadupe": "Llama Dupe",
 		"mawholes": "Maw Holes",
 		"ossierailed": "Ossie Railed",
+		"parrottease": "Parrot Tease",
 		"reflectionflip": "Reflection",
 		"servicepets": "Service Pets",
 		"sofameme": "Sofa Meme",
