@@ -49,7 +49,10 @@ function presentLinks() {
 		"reflectionflip": "Reflection",
 		"ossierailed": "Ossie Railed",
 		"dorimedive": "Dorime Dive",
-		"zombiestrongfisha": "Stronghold Silverfish x Zombie."
+		"servicepets": "Service Pets",
+		"encore2021": "Encore 2021",
+		"zombiestrongfisha": "Stronghold Silverfish x Zombie.",
+		"dragonsit": "Dragon Sit"
 	};
 	
 	const divTitle = document.createElement('h2');
