@@ -44,6 +44,7 @@ function presentLinks() {
 		"dragonsit": "Dragon Sit",
 		"encore2021": "Encore 2021",
 		"fexicebla": "Icee Huffy",
+		"hogpet": "Hogpet",
 		"jungleheat": "Jungle Heat",
 		"llamadupe": "Llama Dupe",
 		"mawholes": "Maw Holes",
