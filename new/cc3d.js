@@ -31,6 +31,7 @@ function presentLinks() {
 	sceneMenu.className = "menuMain";
 	
 	var sceneFiles = {
+		"2023": "2023",
 		"dragonbinds": "Dragon Binds.",
 		"feathervexa": "Feather Vex.",
 		"fexmilking": "Fex Milking.",
