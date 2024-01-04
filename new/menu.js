@@ -160,8 +160,8 @@ function presentOrderedLinks(order) {
 	
 	const orderings = {
 		"date": sort_date,
-		"title": sort_title,
-		"type": sort_type,
+		//"title": sort_title,
+		//"type": sort_type,
 	}
 	
 	var ascending = false;
