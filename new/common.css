@@ -30,6 +30,7 @@ body {
 .menuOption {
 	display: table;
 	opacity: 0.6;
+	cursor: pointer;
 }
 
 .menuOption:hover {
@@ -42,7 +43,25 @@ body {
 	100% { opacity: 0.3; transform: scale(1.2); }
 }
 
-.anim-icon {
+h2 {
+	margin-bottom: 0;
+}
+
+.orderOption {
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	margin: 5px;
+	cursor: pointer;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAAwAQMAAAAitD89AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAGUExURUdwTP///5+UokMAAAABdFJOUwBA5thmAAAA0UlEQVRIx+2UQQrDIBBFR7LIzlwgkGtkl6OF3syj5Ajprgvp9E/GqARCu6iWQgZ5yDgvoNEhuuJPo3uQcYGIyHzk+fJCs7aLcUI4cUH87RPgIV9e6I0LY+ZhHbEgnDntDfMoYF5TMG6xIiip48T8WMsLcqY3p+Tn6M1OxD3wh8Jip8gBpTtrCzRKkdImNszYibKy0FMrv3ljLuCeYWOBtQXCSxCKMHlUgFqK2x+F+CrKC9ovtHeEvrAt4EAlz3zIVxDOemuzkt/5UTP+onDF+3gB+AkVuf1YjLkAAAAASUVORK5CYII=');
+}
+
+.orderSelected {
+	background-color: #122E7A;
+	filter: invert(100%);
+}
+
+.mode-icon {
 	display: inline-block;
 	font-size: 24px;
 	position: relative;
@@ -50,20 +69,10 @@ body {
 	width: 20px;
 }
 
-.anim-icon::before {
+.mode-icon-animated::before, .mode-icon-motion::before {
 	content: "\2605"; /* Unicode star character */
 	color: #ffdb58; /* You can adjust the color */
 	position: relative;
 	top: -2px;
 	animation: sparkle 3s infinite alternate; /* Adjust the animation duration as needed */
-}
-
-.blah {
-	line-height: inital;
-	font-size: initial;
-	margin: 10pt;
-}
-
-h2 {
-	margin-bottom: 0;
 }
