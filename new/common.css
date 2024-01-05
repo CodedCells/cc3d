@@ -33,6 +33,10 @@ body {
 	cursor: pointer;
 }
 
+a {
+	color: inherit;
+}
+
 .menuOption:hover {
 	color: #EDD185;
 	opacity: 1;
@@ -43,7 +47,7 @@ body {
 	100% { opacity: 0.3; transform: scale(1.2); }
 }
 
-h2 {
+h2, h3 {
 	margin-bottom: 0;
 }
 
