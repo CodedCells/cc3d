@@ -123,5 +123,5 @@ class req_handler(BaseHTTPRequestHandler):
             self.wfile.write(random.choice(errors))
 
 if __name__ == '__main__':
-    httpd = HTTPServer(('192.168.0.137', 8080), req_handler)
+    httpd = HTTPServer(('127.0.0.1', 80), req_handler)
     httpd.serve_forever()
