@@ -236,7 +236,7 @@ function loadScene(name) {
 	currentSceneName = name;
 	loader.style.display = "initial";
 	
-	fetch("scenes/" + name + ".json")
+	fetch(name + ".json")
 		.then((response) => response.json())
 		.then((json) => importScene(json));
 }
