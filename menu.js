@@ -101,7 +101,7 @@ function getLoadSceneUI() {
 }
 
 function fetchScenes() {
-	fetch('scenes.json')
+	fetch('scenes.json?v='+Math.random())
 	.then(response => response.json()).catch(error => {
 		console.error('Error fetching JSON:', error);
 		if (fails++ < 6) {
