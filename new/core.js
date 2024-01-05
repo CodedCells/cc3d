@@ -4,8 +4,9 @@ import { OrbitControls } from './rip/OrbitControls.js';
 import { GLTFLoader } from './rip/GLTFLoader.js';
 import { RGBELoader } from './rip/RGBELoader.js';
 
-export let camera, scene, renderer, model, animations, mixer, orbitObject;
+export let camera, controls, scene, renderer, model, animations, mixer, orbitObject;
 var lastTime;
+export let sceneFilepath;
 export var playSpeed = 1;
 
 export function initialiseDefaultScene(c) {
@@ -18,11 +19,19 @@ export function initialiseDefaultScene(c) {
 }
 
 export function loadScene(fn) {
-	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 500 );
-
+	sceneFilepath = fn;
+	if (!camera)
+		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 500 );
+	
+	if (scene)
+		scene.remove.apply(scene, scene.children);
+	
 	scene = new THREE.Scene();
 	
-	const controls = new OrbitControls( camera, renderer.domElement );
+	if (controls)
+		controls.dispose();
+	
+	controls = new OrbitControls( camera, renderer.domElement );
 	controls.addEventListener( 'change', render ); // use if there is no animation loop
 	controls.minDistance = 0;
 	controls.maxDistance = 30;

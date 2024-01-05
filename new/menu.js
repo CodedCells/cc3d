@@ -5,14 +5,17 @@ var scenes = {};
 const linkDisp = document.createElement('span');
 
 function reload() {
-	// Reload the page
+	var newState = window.location.pathname;
 	var query = this.id;
-	window.location.hash = "";
-	if (query)
-		query = "?s=" + query;
 	
-	window.location.search = query;
+	if (query)
+		newState += "?s=" + query;
+	
+	window.history.pushState(query, '', newState);
+	getLoadSceneUI()
 }
+
+window.addEventListener('popstate', getLoadSceneUI);
 
 function onWindowResize() {
 
@@ -27,6 +30,8 @@ function onWindowResize() {
 
 function presentBack() {
 	const sceneMenu = document.getElementById("sceneMenu");
+	sceneMenu.innerHTML = "";
+	
 	const sceneSelectDiv = document.createElement('div');
 	sceneMenu.className = "menuBack";
 	
@@ -51,6 +56,12 @@ function init() {
 	
 	core.initialiseDefaultScene(container);
 	
+	window.addEventListener( 'resize', onWindowResize );
+	
+	fetchScenes();
+}
+
+function getLoadSceneUI() {
 	var loadThis;
 	
 	if (window.location.search) {
@@ -63,13 +74,14 @@ function init() {
 	} 
 	
 	if (!loadThis) {
-		loadThis = 'spin'
-		fetchScenes()
+		if (!core.sceneFile) loadThis = 'spin'
+		presentLinks()
 	}
 	
-	core.loadScene(loadThis + '.glb')
-	
-	window.addEventListener( 'resize', onWindowResize );
+	if (loadThis && loadThis != core.sceneFile) {
+		console.log("chaging to", loadThis);
+		core.loadScene(loadThis)
+	}
 }
 
 function fetchScenes() {
@@ -85,7 +97,8 @@ function fetchScenes() {
 	.then(data => {
 		// Call a function or do something with the JSON data
 		scenes = data;
-		presentLinks();
+		console.log(scenes);
+		getLoadSceneUI();
 	});
 }
 
@@ -132,6 +145,7 @@ function sort_type(data) {
 
 function presentLinks() {
 	const sceneMenu = document.getElementById("sceneMenu");
+	sceneMenu.innerHTML = "";
 	const sceneSelectDiv = document.createElement('div');
 	sceneMenu.className = "menuMain";
 	
