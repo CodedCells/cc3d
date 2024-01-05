@@ -29,7 +29,7 @@ function onWindowResize() {
 	core.render();
 }
 
-function presentBack() {
+function presentBack(sid) {
 	const sceneMenu = document.getElementById("sceneMenu");
 	sceneMenu.innerHTML = "";
 	
@@ -45,7 +45,22 @@ function presentBack() {
 	const optVisTitle = document.createElement('span');
 	optVisTitle.innerHTML = "< Back";
 	optVis.appendChild(optVisTitle);
+	
 	sceneSelectDiv.appendChild(optVis);
+	
+	const optVisInfo = document.createElement('div');
+	const info = scenes[sid];
+	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
+	
+	if (info.post_ids)
+		optVisInfo.innerHTML += "FA: ";
+	
+	for (var i = 0; i < info.post_ids.length; i++) {
+		var d = info.post_ids[i];
+		if (i > 0) optVisInfo.innerHTML += ", ";
+		optVisInfo.innerHTML += `<a href="https://furaffinity.net/view/${d}/">${d}</a>`;
+	}
+	sceneSelectDiv.appendChild(optVisInfo);
 	
 	sceneMenu.appendChild(sceneSelectDiv);
 }
@@ -67,11 +82,11 @@ function getLoadSceneUI() {
 	
 	if (window.location.search) {
 		loadThis = window.location.search.substr(3);
-		presentBack()
+		presentBack(loadThis)
 	}
 	else if (window.location.hash) {
 		loadThis = window.location.hash.substr(1);
-		presentBack()
+		presentBack(loadThis)
 	} 
 	
 	if (!loadThis) {
