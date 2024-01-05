@@ -18,22 +18,9 @@
 		<button onclick="window.location = 'https://www.rfc-editor.org/rfc/rfc2324';">No</button>
 		</div>
 		</div>
-		<script src="three.min.js"></script>
 		<script>
-		var defaultScene = "spin";
 function safetypass() {
-	script = document.createElement('script');
-	script.async = true;
-	script.src = "scenes.js?v="+Math.random();
-	
-	document.body.appendChild(script);
-	document.getElementsByClassName("overbtn")[0].style = "";
-	document.getElementsByClassName("check")[0].style.display = "none";
-	
-	script = document.createElement('script');
-	script.async = true;
-	script.src = "sceneloader.js?v="+Math.random();
-	document.body.appendChild(script);
+	window.location = '/cc3d/new/cc3d.html';
 }
 	</script>
 	</body>
