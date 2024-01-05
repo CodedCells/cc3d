@@ -2,6 +2,7 @@ import * as core from './core.js';
 
 var fails = 0;
 var scenes = {};
+var storedOrder;
 const linkDisp = document.createElement('span');
 
 function reload() {
@@ -165,6 +166,9 @@ function sortScenesTrigger() {
 function presentOrderedLinks(order) {
 	linkDisp.innerHTML = "";
 	
+	if (!order) order = storedOrder;
+	else storedOrder = order;
+	
 	const orderings = {
 		"date": sort_date,
 		"title": sort_title,
@@ -206,11 +210,11 @@ function presentOrderedLinks(order) {
 		linkDisp.appendChild(optVis);
 	}
 	
-	order = orderings[order](scenes);
+	var listorder = orderings[order](scenes);
 	
-	if (ascending) order = order.reverse();
+	if (ascending) listorder = listorder.reverse();
 	
-	for (var [i, sid] of Object.entries(order)) {
+	for (var [i, sid] of Object.entries(listorder)) {
 		const vis = presentLink(sid, scenes[sid]);
 		linkDisp.appendChild(vis);
 	}
