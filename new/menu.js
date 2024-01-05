@@ -124,9 +124,9 @@ function sort_title(data) {
 
 function sort_type(data) {
 	return Object.keys(data).sort((a, b) => {
-		const titleA = (data[a].type || '').toLowerCase();
-		const titleB = (data[b].type || '').toLowerCase();
-		return titleB.localeCompare(titleA);
+		const titleA = (data[a].type + data[a].title).toLowerCase();
+		const titleB = (data[b].type + data[b].title).toLowerCase();
+		return titleA.localeCompare(titleB);
 	});
 }
 
