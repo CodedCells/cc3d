@@ -6,7 +6,7 @@ import { RGBELoader } from './rip/RGBELoader.js';
 
 export let camera, controls, scene, renderer, model, animations, mixer, orbitObject;
 var lastTime;
-export let sceneFilepath;
+export let sceneFile;
 export var playSpeed = 1;
 
 export function initialiseDefaultScene(c) {
@@ -19,7 +19,7 @@ export function initialiseDefaultScene(c) {
 }
 
 export function loadScene(fn) {
-	sceneFilepath = fn;
+	sceneFile = fn;
 	if (!camera)
 		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 500 );
 	
@@ -38,7 +38,7 @@ export function loadScene(fn) {
 	
 	// model
 	const loader = new GLTFLoader().setPath( 'scenes/' );
-	loader.load( fn, function ( gltf ) {
+	loader.load( fn + ".glb", function ( gltf ) {
 		
 		// this magical placement of the function
 		animate();
