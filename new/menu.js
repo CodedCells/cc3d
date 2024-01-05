@@ -111,30 +111,23 @@ function presentLink(sid, info) {
 }
 
 function sort_date(data) {
-	const entries = Object.entries(data);
-
-	// Sort the array based on the date property
-	entries.sort((a, b) => b[1].date - a[1].date);
-	
-	return entries.map(entry => entry[0]);
+	return Object.keys(data).sort((a, b) => data[b].date - data[a].date);
 }
 
 function sort_title(data) {
-	const entries = Object.entries(data);
-
-	// Sort the array based on the date property
-	entries.sort((a, b) => a[1].title.toUpperCase() - b[1].title.toUpperCase());
-	
-	return entries.map(entry => entry[0]);
+	return Object.keys(data).sort((a, b) => {
+		const titleA = data[a].title.toLowerCase();
+		const titleB = data[b].title.toLowerCase();
+		return titleA.localeCompare(titleB);
+	});
 }
 
 function sort_type(data) {
-	const entries = Object.entries(data);
-
-	// Sort the array based on the date property
-	entries.sort((a, b) => a[1].type - b[1].type);
-	
-	return entries.map(entry => entry[0]);
+	return Object.keys(data).sort((a, b) => {
+		const titleA = (data[a].type || '').toLowerCase();
+		const titleB = (data[b].type || '').toLowerCase();
+		return titleB.localeCompare(titleA);
+	});
 }
 
 function presentLinks() {
@@ -160,8 +153,8 @@ function presentOrderedLinks(order) {
 	
 	const orderings = {
 		"date": sort_date,
-		//"title": sort_title,
-		//"type": sort_type,
+		"title": sort_title,
+		"type": sort_type,
 	}
 	
 	var ascending = false;
