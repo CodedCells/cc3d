@@ -7,7 +7,14 @@
 		<link rel="stylesheet" href="common.css">
 	</head>
 	<body>
-		<div class="overbtn" id="scenebtn"></div>
-		<script>window.location = '/cc3d/new/cc3d.html';</script>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./rip/three.module.min.js"
+				}
+			}
+		</script>
+		<div id="sceneMenu"></div>
+		<script type="module" src="menu.js"></script>
 	</body>
 </html>

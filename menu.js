@@ -233,6 +233,21 @@ function presentOrderedLinks(order) {
 		const vis = presentLink(sid, scenes[sid]);
 		linkDisp.appendChild(vis);
 	}
+	
+	var optVis = document.createElement('a');
+	
+	optVis.className = "menuOption";
+	optVis.href = "/cc3d/crafter/"
+	
+	const optVisTitle = document.createElement('span');
+	
+	optVisTitle.innerHTML += '<span class="mode-icon mode-icon-animated"></span> ';
+	
+	optVisTitle.innerHTML += "Crafter";
+	
+	optVis.appendChild(optVisTitle);
+	
+	linkDisp.appendChild(optVis);
 }
 
 init();

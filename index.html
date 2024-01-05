@@ -1,14 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
-		<meta charset="utf-8">
 		<title>CodedCells Scene Loader</title>
+		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<link rel="stylesheet" href="common.css">
 	</head>
+
 	<body>
-		<div class="overbtn" style="display:none" id="scenebtn"></div>
-		<div id="loader" style="display: none;">Loading</div>
+		
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "./rip/three.module.min.js"
+				}
+			}
+		</script>
+		
 		<div class="check">
 		<div class="check-inner">
 		<h1>CodedCells' Scene Loader</h1>
@@ -20,8 +28,16 @@
 		</div>
 		<script>
 function safetypass() {
-	window.location = '/cc3d/new/cc3d.html';
+	script = document.createElement('script');
+	script.type = "module";
+	script.src = "menu.js";
+
+	document.body.appendChild(script);
+	
+	document.getElementsByClassName("check")[0].style.display = "none";
 }
 	</script>
+		
+		<div id="sceneMenu"></div>
 	</body>
 </html>

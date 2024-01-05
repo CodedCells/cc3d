@@ -4,11 +4,6 @@ body {
 	color: #E8E8E8;
 	font-family: sans-serif;
 }
-.overbtn {
-	display: block;
-	position: fixed;
-	z-index: 99999;
-}
 #loader {
 	display: block;
 	position: fixed;
@@ -64,29 +59,78 @@ body {
 	color: #141414;
 	background: #EDD185;
 }
-
-.sceneSelectVisualiser {
-	display: none;
-	max-height: 90vh;
-	margin: 0 auto;
-	padding: 20px;
-	overflow-y: auto;
-	text-align: center;
-}
-
-.sceneChoice {
+#sceneMenu {
+	background: hwb(0deg 0% 100% / 25%);
 	display: inline-block;
-	vertical-align: top;
-	max-width: 300px;
-	margin: 10px;
-	background: #191919;
-	font-size: 120%;
+	position: fixed;
+	z-index: 34;
+	line-height: 150%;
+	font-size: 150%;
+	padding: 0.5em;
+	max-height: calc(100vh - 1em);
+	overflow: auto;
 }
 
-.sceneChoice img {
-	width: 100%;
+@media (max-width: 600px) {
+  .menuMain {
+	  width: 100vw;
+	  height: 100vh;
+  }
+  .menuMain > div {
+	  padding-bottom: max(10vh, 30px);
+  }
 }
 
-.sceneChoice.disabled img {
-	opacity: 0.25;
+.menuOption {
+	display: table;
+	opacity: 0.6;
+	cursor: pointer;
+}
+
+a {
+	color: inherit;
+}
+
+.menuOption:hover {
+	color: #EDD185;
+	opacity: 1;
+}
+
+@keyframes sparkle {
+	0% { opacity: 1; transform: scale(1); }
+	100% { opacity: 0.3; transform: scale(1.2); }
+}
+
+h2, h3 {
+	margin-bottom: 0;
+}
+
+.orderOption {
+	display: inline-block;
+	width: 48px;
+	height: 48px;
+	margin: 5px;
+	cursor: pointer;
+	background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYAAAAAwAQMAAAAitD89AAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAJcEhZcwAADsIAAA7CARUoSoAAAAAGUExURUdwTP///5+UokMAAAABdFJOUwBA5thmAAAA0UlEQVRIx+2UQQrDIBBFR7LIzlwgkGtkl6OF3syj5Ajprgvp9E/GqARCu6iWQgZ5yDgvoNEhuuJPo3uQcYGIyHzk+fJCs7aLcUI4cUH87RPgIV9e6I0LY+ZhHbEgnDntDfMoYF5TMG6xIiip48T8WMsLcqY3p+Tn6M1OxD3wh8Jip8gBpTtrCzRKkdImNszYibKy0FMrv3ljLuCeYWOBtQXCSxCKMHlUgFqK2x+F+CrKC9ovtHeEvrAt4EAlz3zIVxDOemuzkt/5UTP+onDF+3gB+AkVuf1YjLkAAAAASUVORK5CYII=');
+}
+
+.orderSelected {
+	background-color: #122E7A;
+	filter: invert(100%);
+}
+
+.mode-icon {
+	display: inline-block;
+	font-size: 24px;
+	position: relative;
+	color: transparent;
+	width: 20px;
+}
+
+.mode-icon-animated::before, .mode-icon-motion::before {
+	content: "\2605"; /* Unicode star character */
+	color: #ffdb58; /* You can adjust the color */
+	position: relative;
+	top: -2px;
+	animation: sparkle 3s infinite alternate; /* Adjust the animation duration as needed */
 }
