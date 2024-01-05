@@ -79,7 +79,7 @@ function getLoadSceneUI() {
 	}
 	
 	if (loadThis && loadThis != core.sceneFile) {
-		console.log("chaging to", loadThis);
+		//console.log("chaging to", loadThis);
 		core.loadScene(loadThis)
 	}
 }
@@ -97,7 +97,7 @@ function fetchScenes() {
 	.then(data => {
 		// Call a function or do something with the JSON data
 		scenes = data;
-		console.log(scenes);
+		
 		getLoadSceneUI();
 	});
 }
