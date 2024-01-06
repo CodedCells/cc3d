@@ -30,7 +30,7 @@
 function safetypass() {
 	script = document.createElement('script');
 	script.type = "module";
-	script.src = "menu.js";
+	script.src = "menu.js?v="+Math.random();
 
 	document.body.appendChild(script);
 	

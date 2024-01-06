@@ -38,7 +38,7 @@ export function loadScene(fn) {
 	
 	// model
 	const loader = new GLTFLoader().setPath( 'scenes/' );
-	loader.load( fn + ".glb", function ( gltf ) {
+	loader.load( fn + ".glb?v="+Math.random(), function ( gltf ) {
 		
 		// this magical placement of the function
 		animate();
