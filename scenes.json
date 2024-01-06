@@ -146,6 +146,7 @@
 	"hotaction_anim":{
 		"title":"Hot Action",
 		"post_ids":[54249648,55059356],
-		"date":1698699660
+		"date":1698699660,
+		"type":"animated"
 	}
 }
