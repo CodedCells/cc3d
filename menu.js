@@ -2,6 +2,7 @@ import * as core from './core.js';
 
 var fails = 0;
 var scenes = {};
+var sceneIds = {};
 var storedOrder;
 const linkDisp = document.createElement('span');
 
@@ -96,15 +97,30 @@ function init() {
 	fetchScenes();
 }
 
+function reverseSceneIDs() {
+	for (var [name, data] of Object.entries(scenes)) {
+		for (var sid of Object.values(data["post_ids"])) {
+			sceneIds[sid] = name;
+		}
+	}
+}
+
+function preparseThis(loadThis) {
+	if (loadThis in sceneIds)
+		loadThis = sceneIds[loadThis];
+	
+	return loadThis;
+}
+
 function getLoadSceneUI() {
 	var loadThis;
 	
 	if (window.location.search) {
-		loadThis = window.location.search.substr(3);
+		loadThis = preparseThis(window.location.search.substr(3));
 		presentBack(loadThis)
 	}
 	else if (window.location.hash) {
-		loadThis = window.location.hash.substr(1);
+		loadThis = preparseThis(window.location.hash.substr(1));
 		presentBack(loadThis)
 	} 
 	
@@ -132,7 +148,7 @@ function fetchScenes() {
 	.then(data => {
 		// Call a function or do something with the JSON data
 		scenes = data;
-		
+		reverseSceneIDs();
 		getLoadSceneUI();
 	});
 }
