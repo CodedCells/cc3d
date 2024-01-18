@@ -29,6 +29,22 @@ function onWindowResize() {
 	core.render();
 }
 
+function presentBackInfo(sid, info) {
+	const optVisInfo = document.createElement('div');
+	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
+		
+	if (info.post_ids) {
+		optVisInfo.innerHTML += "FA: ";
+	
+		for (var i = 0; i < info.post_ids.length; i++) {
+			var d = info.post_ids[i];
+			if (i > 0) optVisInfo.innerHTML += ", ";
+			optVisInfo.innerHTML += `<a href="https://furaffinity.net/view/${d}/">${d}</a>`;
+		}
+	}
+	return optVisInfo;
+}
+
 function presentBack(sid) {
 	const sceneMenu = document.getElementById("sceneMenu");
 	sceneMenu.innerHTML = "";
@@ -42,26 +58,28 @@ function presentBack(sid) {
 	optVis.id = "";
 	optVis.onclick = reload;
 	
-	const optVisTitle = document.createElement('span');
-	optVisTitle.innerHTML = "< Back";
-	optVis.appendChild(optVisTitle);
-	
-	sceneSelectDiv.appendChild(optVis);
-	
-	const optVisInfo = document.createElement('div');
 	const info = scenes[sid];
-	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
-	
-	if (info.post_ids) {
-		optVisInfo.innerHTML += "FA: ";
-	
-		for (var i = 0; i < info.post_ids.length; i++) {
-			var d = info.post_ids[i];
-			if (i > 0) optVisInfo.innerHTML += ", ";
-			optVisInfo.innerHTML += `<a href="https://furaffinity.net/view/${d}/">${d}</a>`;
-		}
+	if (info) {
+		const optVisTitle = document.createElement('span');
+		optVisTitle.innerHTML = "< Back";
+		optVis.appendChild(optVisTitle);
+		
+		sceneSelectDiv.appendChild(optVis);
+		
+		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
+	} else {
+		// hacky because onclick fucking dies after 404
+		const optVisTitle = document.createElement('a');
+		optVisTitle.innerHTML = "< Back";
+		optVisTitle.href = "/cc3d/sceneloader_nsfw.html";
+		optVis.appendChild(optVisTitle);
+		
+		sceneSelectDiv.appendChild(optVis);
+		
+		sceneSelectDiv.innerHTML += `<br>An error, cannot find ${sid}`;
+		if (parseInt(sid) >= 28747249)
+			sceneSelectDiv.innerHTML += "<br>Perhaps wrong post ID?";
 	}
-	sceneSelectDiv.appendChild(optVisInfo);
 	
 	sceneMenu.appendChild(sceneSelectDiv);
 }

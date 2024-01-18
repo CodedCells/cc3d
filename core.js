@@ -101,7 +101,25 @@ export function loadScene(fn) {
 		
 		// wait until the model can be added to the scene without blocking due to shader compilation
 		scene.add( model );
-	} );
+	},
+	function (xhr) {
+        // This function will be called while the model is loading, you can use it for progress updates if needed
+        //console.log(xhr.loaded, xhr.total);
+    },
+	function (error) {
+        // Handle errors, including 404 Not Found
+		if (fn != 'spin')
+			loadScene("spin");
+		
+        if (error.status === 404) {
+            console.error('Model not found: ' + modelUrl);
+            // Handle the 404 error gracefully, e.g., show a placeholder or a message to the user
+        } else {
+            console.error('Error loading model:', error);
+            // Handle other types of errors
+        }
+    }
+	);
 }
 
 function animate(now) {
