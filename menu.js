@@ -32,6 +32,10 @@ function onWindowResize() {
 
 function presentBackInfo(sid, info) {
 	const optVisInfo = document.createElement('div');
+	const pageTitle = info.title + " - CodedCells 3D Scene Viewer";;
+	document.title = pageTitle;
+	document.getElementById("ogTitle").content = pageTitle;
+	
 	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
 		
 	if (info.post_ids) {
