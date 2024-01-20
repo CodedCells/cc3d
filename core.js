@@ -3,13 +3,18 @@ import * as THREE from 'three';
 import { OrbitControls } from './rip/OrbitControls.js';
 import { GLTFLoader } from './rip/GLTFLoader.js';
 import { RGBELoader } from './rip/RGBELoader.js';
+import Stats from './rip/stats.module.js';
 
-export let camera, controls, scene, renderer, model, animations, mixer, orbitObject;
+export let camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
 var lastTime;
 export let sceneFile;
 export var playSpeed = 1;
 
-export function initialiseDefaultScene(c) {
+export function setPixelRatio(v) {
+	renderer.setPixelRatio(v);
+}
+
+export function initialiseDefaultScene(c) {	
 	renderer = new THREE.WebGLRenderer( { antialias: true } );
 	renderer.setPixelRatio( window.devicePixelRatio );
 	renderer.setSize( window.innerWidth, window.innerHeight );
@@ -19,6 +24,14 @@ export function initialiseDefaultScene(c) {
 }
 
 export function loadScene(fn) {
+	
+	if (!stats) {
+		stats = new Stats();
+		stats.domElement.style.left = null;
+		stats.domElement.style.right = "0";
+		document.body.appendChild(stats.dom);
+	}
+	
 	sceneFile = fn;
 	if (!camera)
 		camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 0.25, 500 );
@@ -140,6 +153,11 @@ function animate(now) {
 }
 
 export function render() {
-	if (camera)
+	if (camera) {
+		stats.begin();
+		
 		renderer.render( scene, camera );
+		
+		stats.end();
+	}
 }
