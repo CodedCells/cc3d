@@ -50,7 +50,7 @@ function presentBackInfo(sid, info) {
 	return optVisInfo;
 }
 
-function presentBack(sid) {
+function presentBack(sid, abs) {
 	const sceneMenu = document.getElementById("sceneMenu");
 	sceneMenu.innerHTML = "";
 	
@@ -61,18 +61,11 @@ function presentBack(sid) {
 	
 	optVis.className = "menuOption";
 	optVis.id = "";
-	optVis.onclick = reload;
 	
 	const info = scenes[sid];
-	if (info) {
-		const optVisTitle = document.createElement('span');
-		optVisTitle.innerHTML = "< Back";
-		optVis.appendChild(optVisTitle);
-		
-		sceneSelectDiv.appendChild(optVis);
-		
-		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
-	} else {
+	if (!info) abs = true;
+	
+	if (abs) {
 		// hacky because onclick fucking dies after 404
 		const optVisTitle = document.createElement('a');
 		optVisTitle.innerHTML = "< Back";
@@ -80,7 +73,17 @@ function presentBack(sid) {
 		optVis.appendChild(optVisTitle);
 		
 		sceneSelectDiv.appendChild(optVis);
-		
+	} else {
+		const optVisTitle = document.createElement('span');
+		optVisTitle.innerHTML = "< Back";
+		optVis.appendChild(optVisTitle);
+		optVis.onclick = reload;
+		sceneSelectDiv.appendChild(optVis);
+	}
+	
+	if (info) {
+		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
+	} else {
 		sceneSelectDiv.innerHTML += `<br>An error, cannot find ${sid}`;
 		if (parseInt(sid) >= 28747249)
 			sceneSelectDiv.innerHTML += "<br>Perhaps wrong post ID?";
@@ -126,7 +129,11 @@ function getLoadSceneUI() {
 	else if (window.location.hash) {
 		loadThis = preparseThis(window.location.hash.substr(1));
 		presentBack(loadThis)
-	} 
+	}
+	else if (window.location.pathname.includes("/s")) {
+		loadThis = preparseThis(window.location.pathname.split("/")[3]);
+		presentBack(loadThis, true)
+	}
 	
 	if (!loadThis) {
 		if (!core.sceneFile) loadThis = 'spin'
@@ -140,7 +147,7 @@ function getLoadSceneUI() {
 }
 
 function fetchScenes() {
-	fetch('scenes.json?v='+Math.random())
+	fetch('/cc3d/scenes.json?v='+Math.random())
 	.then(response => response.json()).catch(error => {
 		console.error('Error fetching JSON:', error);
 		if (fails++ < 6) {
@@ -157,12 +164,14 @@ function fetchScenes() {
 	});
 }
 
-function presentLink(sid, info) {
-	const optVis = document.createElement('div');
+function presentLink(sid, info, abs) {
+	const optVis = document.createElement('a');
 	
 	optVis.className = "menuOption";
 	optVis.id = sid;
-	optVis.onclick = reload;
+	
+	if (abs) optVis.href = `/cc3d/s/${sid}/`;
+	else optVis.onclick = reload;
 	
 	const optVisTitle = document.createElement('span');
 	
@@ -241,6 +250,8 @@ function presentOrderedLinks(order) {
 		order = "name";
 	}
 	
+	const abs = window.location.pathname.includes("sceneloader_nsfw.html");
+	
 	var rx = 0;
 	for (var [name] of Object.entries(orderings)) {
 		var optVis = document.createElement('div');
@@ -269,7 +280,7 @@ function presentOrderedLinks(order) {
 	if (ascending) listorder = listorder.reverse();
 	
 	for (var [i, sid] of Object.entries(listorder)) {
-		const vis = presentLink(sid, scenes[sid]);
+		const vis = presentLink(sid, scenes[sid], abs);
 		linkDisp.appendChild(vis);
 	}
 	

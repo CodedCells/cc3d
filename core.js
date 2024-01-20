@@ -37,8 +37,8 @@ export function loadScene(fn) {
 	controls.maxDistance = 30;
 	
 	// model
-	const loader = new GLTFLoader().setPath( 'scenes/' );
-	loader.load( fn + ".glb?v="+Math.random(), function ( gltf ) {
+	const loader = new GLTFLoader().setPath( '/cc3d/scenes/' );
+	loader.load(fn + ".glb?v="+Math.random(), function ( gltf ) {
 		
 		// this magical placement of the function
 		animate();
@@ -71,7 +71,7 @@ export function loadScene(fn) {
 			scene.add(ambientLight);
 			
 			if (orbitObject.userData.sky) {
-				var skyTextureName = "skies/" + orbitObject.userData.sky + ".jpg";
+				var skyTextureName = "/cc3d/skies/" + orbitObject.userData.sky + ".jpg";
 				var textureLoader = new THREE.TextureLoader();
 				var skyTexture = textureLoader.load(skyTextureName);
 				skyTexture.colorSpace = THREE.SRGBColorSpace;

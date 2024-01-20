@@ -101,6 +101,10 @@ a {
 	opacity: 1;
 }
 
+a.menuOption {
+	text-decoration: none;
+}
+
 @keyframes sparkle {
 	0% { opacity: 1; transform: scale(1); }
 	100% { opacity: 0.3; transform: scale(1.2); }
