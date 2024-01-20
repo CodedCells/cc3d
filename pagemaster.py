@@ -16,7 +16,7 @@ for scene, info in scenes.items():
         mkdir(f's/{scene}')
     
     with open(f's/{scene}/index.html', 'w') as fh:
-        out = template.replace('[TITLE}', info.get('title', scene) + ' - CodedCells 3D Scene Viewer')
+        out = template.replace('[TITLE]', info.get('title', scene) + ' - CodedCells 3D Scene Viewer')
         out = out.replace("[DESC]", """NSFW 3D Scenes made by CodedCells and his friends.
 Select, rotate and zoom to your desired viewing angles.""")
         fh.write(out)
