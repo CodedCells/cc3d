@@ -38,7 +38,7 @@ function presentBackInfo(sid, info) {
 	
 	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
 		
-	if (info.post_ids) {
+	if (info.post_ids && info.post_ids.length) {
 		optVisInfo.innerHTML += "FA: ";
 	
 		for (var i = 0; i < info.post_ids.length; i++) {
@@ -106,7 +106,8 @@ function init() {
 
 function reverseSceneIDs() {
 	for (var [name, data] of Object.entries(scenes)) {
-		for (var sid of Object.values(data["post_ids"])) {
+		if (!data.post_ids) continue;
+		for (var sid of Object.values(data.post_ids)) {
 			sceneIds[sid] = name;
 		}
 	}
