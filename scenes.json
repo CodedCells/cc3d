@@ -167,6 +167,7 @@
 	"chalgift": {
 		"title": "Chal Gift",
 		"post_ids":[],
-		"date":1710962723
+		"date":1710962723,
+		"type":"animated"
 	}
 }
