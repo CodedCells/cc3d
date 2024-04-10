@@ -126,7 +126,7 @@ export function loadScene(fn) {
 	function (error) {
         // Handle errors, including 404 Not Found
 		if (fn != 'spin')
-			loadScene("spin");
+			loadScene("error");
 		
         if (error.status === 404) {
             console.error('Model not found: ' + modelUrl);
