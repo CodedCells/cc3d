@@ -85,8 +85,12 @@ export function loadScene(fn, path) {
 			if (!ambient)
 				ambient = "404047";
 			
+			var ambientIntensity = orbitObject.userData.ambientIntensity;
+			if (!ambientIntensity)
+				ambientIntensity = 0.8;
+			
 			var ambientLightColor = new THREE.Color("#" + ambient);
-			var ambientLight = new THREE.AmbientLight(ambientLightColor, 0.8);
+			var ambientLight = new THREE.AmbientLight(ambientLightColor, ambientIntensity);
 			scene.add(ambientLight);
 			
 			if (orbitObject.userData.sky) {
