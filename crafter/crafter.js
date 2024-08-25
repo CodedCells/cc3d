@@ -53,6 +53,10 @@ function loadHexImgs() {
 
 function showHide(targets, desired) {
 	for (const [sid, name] of Object.entries(targets)) {
+		const kind = name.split("_")[0];
+		if (!(desired.startsWith(kind)))
+			desired = `${kind}_${desired}_rig`;
+		
 		scene.getObjectByName(sid).visible = name == desired;
 		scene.getObjectByName(sid).frustumCulled = false;
 	}
@@ -96,8 +100,8 @@ function mouseMoveHex(event) {
 
 function swapPositions() {
 	[currentSelection["top"], currentSelection["bottom"]] = [currentSelection["bottom"], currentSelection["top"]];
-	showHide(tops, "top_" + currentSelection["top"] + "_rig");
-	showHide(bottoms, "bottom_" + currentSelection["bottom"] + "_rig");
+	showHide(tops, currentSelection["top"]);
+	showHide(bottoms, currentSelection["bottom"]);
 }
 
 function clickHex(event) {
@@ -123,12 +127,7 @@ function clickHex(event) {
 	posName = ["top", "bottom"][hexInfo.modeId];
 	currentSelection[posName] = hexInfo.hexes[id].id;
 	
-	showHide(posType, posName + "_" + hexInfo.hexes[id].id + "_rig");
-}
-
-function regexModelName(s) {
-	const match = s.match(/^(top|bottom)_(.*?)_rig$/);
-	return match ? match[2] : null;
+	showHide(posType, hexInfo.hexes[id].id);
 }
 
 function updateControls(scn) {
@@ -145,13 +144,13 @@ function updateControls(scn) {
 			tops[name] = name;
 	}
 	
-	const defaultTop = Object.keys(tops)[0];
-	const defaultBottom = Object.keys(bottoms)[0];
+	const defaultTop = "wolf";
+	const defaultBottom = "fox";
 	showHide(tops, defaultTop);
 	showHide(bottoms, defaultBottom);
 	
-	currentSelection["top"] = regexModelName(defaultTop);
-	currentSelection["bottom"] = regexModelName(defaultBottom);
+	currentSelection["top"] = defaultTop;
+	currentSelection["bottom"] = defaultBottom;
 	
 	btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
