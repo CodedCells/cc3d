@@ -126,7 +126,11 @@ function updateControls(scn) {
 	
 	btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
-	/*
+	
+	debugControls = document.createElement('div');
+	debugControls.className = "debugControls";
+	btnContainer.appendChild(debugControls);
+	
 	btn = document.createElement('select');
 	btn.onchange = function () {
 		showHide(bottoms, this.value);
@@ -140,7 +144,7 @@ function updateControls(scn) {
 		btn.appendChild(opt);
 		//console.log(sid, name);
 	}
-	btnContainer.appendChild(btn);
+	debugControls.appendChild(btn);
 
 	btn = document.createElement('select');
 	btn.onchange = function () {
@@ -155,17 +159,17 @@ function updateControls(scn) {
 		btn.appendChild(opt);
 		//console.log(sid, name);
 	}
-	btnContainer.appendChild(btn);
+	debugControls.appendChild(btn);
 	
 	btn = document.createElement('button');
 	btn.innerHTML = "Pause"
 	btn.onclick = playPause;
-	btnContainer.appendChild(btn);
+	debugControls.appendChild(btn);
 	
 	info = document.createElement('span');
 	info.innerHTML = " Click to Enter, Space to toggle camera, WASD to move freecam, R to reset.";
-	btnContainer.appendChild(info);
-	*/
+	debugControls.appendChild(info);
+	
 	charUI = document.createElement("CANVAS")
 	charUI.style.display = "block";
 	btnContainer.appendChild(charUI);
