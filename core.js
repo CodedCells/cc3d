@@ -27,7 +27,7 @@ export function initialiseDefaultScene(c) {
 	c.appendChild( renderer.domElement );
 }
 
-export function loadScene(fn) {
+export function loadScene(fn, path) {
 	
 	if (!stats) {
 		stats = new Stats();
@@ -53,8 +53,10 @@ export function loadScene(fn) {
 	controls.minDistance = 0;
 	controls.maxDistance = 30;
 	
+	if (path === undefined)
+		path = '/cc3d/scenes/';
 	// model
-	const loader = new GLTFLoader().setPath( '/cc3d/scenes/' );
+	const loader = new GLTFLoader().setPath( path );
 	loader.load(fn + ".glb?v="+Math.random(), function ( gltf ) {
 		
 		// this magical placement of the function
