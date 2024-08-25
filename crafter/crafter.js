@@ -11,6 +11,11 @@ var hasLoaded = false;
 var loadCount = 0;
 var expectLoad = 0;
 
+var currentSelection = {
+	"top": undefined,
+	"bottom": undefined
+};
+
 var hexInfo = {
 	"cols": 3,
 	"width": 60 * Math.sqrt(3),
@@ -86,13 +91,22 @@ function mouseMoveHex(event) {
 		hexInfo.hoverId = newHexHovered;
 		hexGridDrawer();
 	}
-	
+	return [mouseX, mouseY];
+}
+
+function swapPositions() {
+	[currentSelection["top"], currentSelection["bottom"]] = [currentSelection["bottom"], currentSelection["top"]];
+	showHide(tops, "top_" + currentSelection["top"] + "_rig");
+	showHide(bottoms, "bottom_" + currentSelection["bottom"] + "_rig");
 }
 
 function clickHex(event) {
-	mouseMoveHex(event);
+	[mouseX, mouseY] = mouseMoveHex(event);
 	if (hexInfo.hoverId == null) {// not a hexagon
-		playPause();
+		if (mouseX < 150)
+			playPause();
+		else
+			swapPositions();
 		return
 	}
 	
@@ -107,8 +121,14 @@ function clickHex(event) {
 	
 	posType = [tops, bottoms][hexInfo.modeId];
 	posName = ["top", "bottom"][hexInfo.modeId];
+	currentSelection[posName] = hexInfo.hexes[id].id;
 	
 	showHide(posType, posName + "_" + hexInfo.hexes[id].id + "_rig");
+}
+
+function regexModelName(s) {
+	const match = s.match(/^(top|bottom)_(.*?)_rig$/);
+	return match ? match[2] : null;
 }
 
 function updateControls(scn) {
@@ -123,10 +143,15 @@ function updateControls(scn) {
 		
 		else if (name.startsWith('top'))
 			tops[name] = name;
-		
-		showHide(tops, Object.keys(tops)[0]);
-		showHide(bottoms, Object.keys(bottoms)[0]);
 	}
+	
+	const defaultTop = Object.keys(tops)[0];
+	const defaultBottom = Object.keys(bottoms)[0];
+	showHide(tops, defaultTop);
+	showHide(bottoms, defaultBottom);
+	
+	currentSelection["top"] = regexModelName(defaultTop);
+	currentSelection["bottom"] = regexModelName(defaultBottom);
 	
 	btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
@@ -255,6 +280,21 @@ function drawplayPuase() {
 	var text = "II";
 	if (!(play)) text = ">";
 	ctx.fillText(text, 20, 90);
+	
+	ctx.fillStyle = "#141414";
+	
+	drawPolygon([
+		[331.5, 35],
+		[278, 35],
+		[278, 95],
+		[331.5, 122.5]
+	]);
+	
+	ctx.fill();
+	ctx.stroke();
+	
+	ctx.fillStyle = "#fff";
+	ctx.fillText("⇋", 290, 90);
 }
 
 function hexGridDrawer() {
