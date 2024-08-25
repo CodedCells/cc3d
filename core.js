@@ -5,10 +5,11 @@ import { GLTFLoader } from './rip/GLTFLoader.js';
 import { RGBELoader } from './rip/RGBELoader.js';
 import Stats from './rip/stats.module.js';
 
-export let camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
+export let sceneReady, camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
 var lastTime;
 export let sceneFile;
 export let playSpeed = 1;
+sceneReady = false;
 
 export function setPlaySpeed(value) {
     playSpeed = value;
@@ -28,7 +29,7 @@ export function initialiseDefaultScene(c) {
 }
 
 export function loadScene(fn, path) {
-	
+	sceneReady = false;
 	if (!stats) {
 		stats = new Stats();
 		stats.domElement.style.left = null;
@@ -128,6 +129,7 @@ export function loadScene(fn, path) {
 		
 		// wait until the model can be added to the scene without blocking due to shader compilation
 		scene.add( model );
+		sceneReady = true;
 	},
 	function (xhr) {
         // This function will be called while the model is loading, you can use it for progress updates if needed
@@ -164,6 +166,7 @@ function animate(now) {
 
 export function render() {
 	if (camera) {
+		sceneReady = true;
 		stats.begin();
 		
 		renderer.render( scene, camera );
