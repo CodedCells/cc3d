@@ -172,7 +172,7 @@ function updateControls(scn) {
 	charUI.width = 350;
 	charUI.height = 350;
 	ctx = charUI.getContext("2d");
-	hexGridDrawer(hexInfo);
+	hexGridDrawer();
 	
 	charUI.addEventListener("mousemove", mouseMoveHex);
 	
