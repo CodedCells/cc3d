@@ -8,7 +8,11 @@ import Stats from './rip/stats.module.js';
 export let camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
 var lastTime;
 export let sceneFile;
-export var playSpeed = 1;
+export let playSpeed = 1;
+
+export function setPlaySpeed(value) {
+    playSpeed = value;
+}
 
 export function setPixelRatio(v) {
 	renderer.setPixelRatio(v);
