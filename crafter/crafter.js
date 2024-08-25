@@ -65,7 +65,7 @@ function idxToGrid(i) {
 }
 
 function mouseMoveHex(event) {
-	const rect = canvas.getBoundingClientRect();
+	const rect = charUI.getBoundingClientRect();
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
 	
