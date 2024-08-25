@@ -206,16 +206,28 @@ function hexPos(col, row, width, height, gap) {
 	return [x, y - height];
 }
 
+function drawPolygon(cooridates) {
+	ctx.beginPath();
+	
+	ctx.moveTo(cooridates[0][0], cooridates[0][1])
+	for (var i = 1; i < cooridates.length; i++)
+		ctx.lineTo(cooridates[i][0], cooridates[i][1]);
+	
+	ctx.closePath();
+}
+
 function drawHexagon(ctx, x, y, img, width, height, gap) {
 	size = height / 2;
-	ctx.beginPath();
-	ctx.moveTo(x + width/2, y);
-	ctx.lineTo(x + width, y + size / 2);
-	ctx.lineTo(x + width, y + 3/2 * size);
-	ctx.lineTo(x + width/2, y + 2 * size);
-	ctx.lineTo(x, y + 3/2 * size);
-	ctx.lineTo(x, y + size / 2);
-	ctx.closePath();
+	
+	drawPolygon([
+		[x + width/2, y],
+		[x + width, y + size / 2],
+		[x + width, y + 3/2 * size],
+		[x + width/2, y + 2 * size],
+		[x, y + 3/2 * size],
+		[x, y + size / 2]
+	]);
+	
 	ctx.fill();
 	ctx.stroke();
 	
@@ -227,20 +239,22 @@ function drawHexagon(ctx, x, y, img, width, height, gap) {
 function drawplayPuase() {
 	ctx.fillStyle = "#141414";
 	if (play) ctx.fillStyle = "#EDD185";
-	ctx.beginPath();
-	ctx.moveTo(5, 35);
-	ctx.lineTo(53.5, 35);
-	ctx.lineTo(53.5, 95);
-	ctx.lineTo(5, 122.5);
-	ctx.closePath();
+	
+	drawPolygon([
+		[5, 35],
+		[53.5, 35],
+		[53.5, 95],
+		[5, 122.5]
+	]);
+	
 	ctx.fill();
 	ctx.stroke();
 	
-	ctx.font = "30px sans-serif";
-	ctx.strokeStyle = "#fff";
-	var text = "I I";
+	ctx.font = "40px sans-serif";
+	ctx.fillStyle = "#fff";
+	var text = "II";
 	if (!(play)) text = ">";
-	ctx.strokeText(text, 20, 80);
+	ctx.fillText(text, 20, 90);
 }
 
 function hexGridDrawer() {
