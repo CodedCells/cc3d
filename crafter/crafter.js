@@ -55,6 +55,7 @@ function showHide(targets, desired) {
 
 function playPause() {
 	this.innerHTML = ["Play", "Pause"][play ^= true];
+	hexGridDrawer();
 }
 
 function idxToGrid(i) {
@@ -90,7 +91,10 @@ function mouseMoveHex(event) {
 
 function clickHex(event) {
 	mouseMoveHex(event);
-	if (hexInfo.hoverId == null) return;
+	if (hexInfo.hoverId == null) {// not a hexagon
+		playPause();
+		return
+	}
 	
 	id = hexInfo.hoverId;
 	
@@ -220,8 +224,29 @@ function drawHexagon(ctx, x, y, img, width, height, gap) {
 			ctx.drawImage(img, x-gap*1.5, y, height, height);
 }
 
+function drawplayPuase() {
+	ctx.fillStyle = "#141414";
+	if (play) ctx.fillStyle = "#EDD185";
+	ctx.beginPath();
+	ctx.moveTo(5, 35);
+	ctx.lineTo(53.5, 35);
+	ctx.lineTo(53.5, 95);
+	ctx.lineTo(5, 122.5);
+	ctx.closePath();
+	ctx.fill();
+	ctx.stroke();
+	
+	ctx.font = "30px sans-serif";
+	ctx.strokeStyle = "#fff";
+	var text = "I I";
+	if (!(play)) text = ">";
+	ctx.strokeText(text, 20, 80);
+}
+
 function hexGridDrawer() {
 	ctx.clearRect(0, 0, charUI.width, charUI.height);
+	
+	drawplayPuase();
 	
 	for (let i = 0; i < hexInfo.hexes.length; i++) {
 		data = hexInfo.hexes[i];
