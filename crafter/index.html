@@ -6,14 +6,19 @@
 		<link rel="stylesheet" href="../common.css">
 		<style>
 		.overbtn {user-select:none;}
-		.debugControls {display: none;}
+		/*.debugControls {display: none;}*/
 		</style>
 	</head>
 	<body>
 		<div class="overbtn" id="scenebtn"></div>
-		<div id="loader" style="display: none;">Loading</div>
-		<script src="three.min.js"></script>
-		<script src="sceneloader.js"></script>
-		<script src="crafter.js"></script>
+		<div id="loader">Initialising...</div>
+		<script type="importmap">
+			{
+				"imports": {
+					"three": "/cc3d/rip/three.module.min.js"
+				}
+			}
+		</script>
+		<script type="module" src="crafter.js"></script>
 	</body>
 </html>

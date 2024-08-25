@@ -1,8 +1,10 @@
-loadScene("craftertest");
+import * as core from '/cc3d/core.js';
+
+var fails = 0;
 
 var bottoms = {};
 var tops = {};
-var scene = [];
+var scene;
 
 var charUI;
 var ctx;
@@ -10,7 +12,6 @@ var ctx;
 var hasLoaded = false;
 var loadCount = 0;
 var expectLoad = 0;
-
 var currentSelection = {
 	"top": undefined,
 	"bottom": undefined
@@ -34,12 +35,47 @@ var hexInfo = {
 	]
 }
 
+function onWindowResize() {
+
+	if (core.camera) {
+		core.camera.aspect = window.innerWidth / window.innerHeight;
+		core.camera.updateProjectionMatrix();
+	}
+	core.renderer.setSize( window.innerWidth, window.innerHeight );
+
+	core.render();
+}
+
+function playPause() {
+	if (core.playSpeed > 0) core.setPlaySpeed(0);
+	else core.setPlaySpeed(1);
+	
+	hexGridDrawer();
+}
+
+function swapPositions() {
+	[currentSelection["top"], currentSelection["bottom"]] = [currentSelection["bottom"], currentSelection["top"]];
+	showHide(tops, currentSelection["top"]);
+	showHide(bottoms, currentSelection["bottom"]);
+}
+
+function showHide(targets, desired) {
+	for (const [sid, name] of Object.entries(targets)) {
+		const kind = name.split("_")[0];
+		if (!(desired.startsWith(kind)))
+			desired = `${kind}_${desired}_rig`;
+		
+		core.scene.getObjectByName(sid).visible = name == desired;
+		core.scene.getObjectByName(sid).frustumCulled = false;
+	}
+}
+
 function loadHexImgs() {
 	if (hasLoaded) return;
 	
-	for (let i = 0; i < hexInfo.hexes.length; i++) {
+	for (var i = 0; i < hexInfo.hexes.length; i++) {
 		expectLoad += 1;
-		data = hexInfo.hexes[i];
+		var data = hexInfo.hexes[i];
 		data.img = new Image();
 		data.img.src = "https://i.imgur.com/" + data.src + ".png";
 		data.img.onload = function() {
@@ -51,26 +87,10 @@ function loadHexImgs() {
 	hasLoaded = true;
 }
 
-function showHide(targets, desired) {
-	for (const [sid, name] of Object.entries(targets)) {
-		const kind = name.split("_")[0];
-		if (!(desired.startsWith(kind)))
-			desired = `${kind}_${desired}_rig`;
-		
-		scene.getObjectByName(sid).visible = name == desired;
-		scene.getObjectByName(sid).frustumCulled = false;
-	}
-}
-
-function playPause() {
-	this.innerHTML = ["Play", "Pause"][play ^= true];
-	hexGridDrawer();
-}
-
 function idxToGrid(i) {
 	if (i > 1) i++;
-	row = Math.floor(i / hexInfo.cols) + 1;
-	col = i % hexInfo.cols;
+	var row = Math.floor(i / hexInfo.cols) + 1;
+	var col = i % hexInfo.cols;
 	return [col, row];
 }
 
@@ -79,11 +99,11 @@ function mouseMoveHex(event) {
 	const mouseX = event.clientX - rect.left;
 	const mouseY = event.clientY - rect.top;
 	
-	let newHexHovered = null;
+	var newHexHovered = null;
 	
-	for (let i = 0; i < hexInfo.hexes.length; i++) {
-		[col, row] = idxToGrid(i);
-		[x, y] = hexPos(col, row, hexInfo.width, hexInfo.height, hexInfo.gap);
+	for (var i = 0; i < hexInfo.hexes.length; i++) {
+		var [col, row] = idxToGrid(i);
+		var [x, y] = hexPos(col, row, hexInfo.width, hexInfo.height, hexInfo.gap);
 		
 		if (isHexagonHovered(x-hexInfo.gap, y, mouseX, mouseY, hexInfo)) {
 			newHexHovered = i;
@@ -98,14 +118,8 @@ function mouseMoveHex(event) {
 	return [mouseX, mouseY];
 }
 
-function swapPositions() {
-	[currentSelection["top"], currentSelection["bottom"]] = [currentSelection["bottom"], currentSelection["top"]];
-	showHide(tops, currentSelection["top"]);
-	showHide(bottoms, currentSelection["bottom"]);
-}
-
 function clickHex(event) {
-	[mouseX, mouseY] = mouseMoveHex(event);
+	var [mouseX, mouseY] = mouseMoveHex(event);
 	if (hexInfo.hoverId == null) {// not a hexagon
 		if (mouseX < 150)
 			playPause();
@@ -114,7 +128,7 @@ function clickHex(event) {
 		return
 	}
 	
-	id = hexInfo.hoverId;
+	var id = hexInfo.hoverId;
 	
 	console.log("Hexagon clicked:", hexInfo.hoverId, hexInfo.hexes[id].id);
 	
@@ -123,18 +137,23 @@ function clickHex(event) {
 		return
 	}
 	
-	posType = [tops, bottoms][hexInfo.modeId];
-	posName = ["top", "bottom"][hexInfo.modeId];
+	var posType = [tops, bottoms][hexInfo.modeId];
+	var posName = ["top", "bottom"][hexInfo.modeId];
 	currentSelection[posName] = hexInfo.hexes[id].id;
 	
 	showHide(posType, hexInfo.hexes[id].id);
 }
 
-function updateControls(scn) {
+function regexModelName(s) {
+	const match = s.match(/^(top|bottom)_(.*?)_rig$/);
+	return match ? match[2] : null;
+	showHide(posType, hexInfo.hexes[id].id);
+}
+
+function updateControls() {
 	loadHexImgs();
-	scene = scn;
-	
-	sceneItems = scene.children[0].children;
+	console.log(core.scene.children)
+	const sceneItems = core.scene.children[1].children;
 	for (var i = 0; i < sceneItems.length; i++) {
 		var name = sceneItems[i].name;
 		if (name.startsWith('bottom'))
@@ -152,23 +171,25 @@ function updateControls(scn) {
 	currentSelection["top"] = defaultTop;
 	currentSelection["bottom"] = defaultBottom;
 	
-	btnContainer = document.getElementById("scenebtn");
+	var btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
 	
-	debugControls = document.createElement('div');
+	const debugControls = document.createElement('div');
 	debugControls.className = "debugControls";
 	btnContainer.appendChild(debugControls);
 	
-	btn = document.createElement('select');
+	var btn = document.createElement('select');
 	btn.onchange = function () {
 		showHide(bottoms, this.value);
+		currentSelection["bottom"] = this.value;
 	}
 	btn.label = "Select Bottom";
 
 	for (const [sid, name] of Object.entries(bottoms)) {
-		opt = document.createElement('option');
-		opt.innerHTML = name;
-		opt.value = sid;
+		var opt = document.createElement('option');
+		var parsed = regexModelName(name);
+		opt.innerHTML = parsed;
+		opt.value = parsed;
 		btn.appendChild(opt);
 		//console.log(sid, name);
 	}
@@ -177,13 +198,15 @@ function updateControls(scn) {
 	btn = document.createElement('select');
 	btn.onchange = function () {
 		showHide(tops, this.value);
+		currentSelection["top"] = this.value;
 	}
 	btn.label = "Select Top";
 
 	for (const [sid, name] of Object.entries(tops)) {
 		opt = document.createElement('option');
-		opt.innerHTML = name;
-		opt.value = sid;
+		var parsed = regexModelName(name);
+		opt.innerHTML = parsed;
+		opt.value = parsed;
 		btn.appendChild(opt);
 		//console.log(sid, name);
 	}
@@ -193,10 +216,6 @@ function updateControls(scn) {
 	btn.innerHTML = "Pause"
 	btn.onclick = playPause;
 	debugControls.appendChild(btn);
-	
-	info = document.createElement('span');
-	info.innerHTML = " Click to Enter, Space to toggle camera, WASD to move freecam, R to reset.";
-	debugControls.appendChild(info);
 	
 	charUI = document.createElement("CANVAS")
 	charUI.style.display = "block";
@@ -212,7 +231,7 @@ function updateControls(scn) {
 }
 
 function isHexagonHovered(x, y, mouseX, mouseY, hi) {
-	width = hi.height / 2;
+	var width = hi.height / 2;
 	const innerRadius = width - hi.gap;
 	const centerX = x + width - hi.gap;
 	const centerY = y + width + hi.gap;
@@ -241,7 +260,7 @@ function drawPolygon(cooridates) {
 }
 
 function drawHexagon(ctx, x, y, img, width, height, gap) {
-	size = height / 2;
+	var size = height / 2;
 	
 	drawPolygon([
 		[x + width/2, y],
@@ -262,7 +281,7 @@ function drawHexagon(ctx, x, y, img, width, height, gap) {
 
 function drawplayPuase() {
 	ctx.fillStyle = "#141414";
-	if (play) ctx.fillStyle = "#EDD185";
+	if (core.playSpeed > 0) ctx.fillStyle = "#EDD185";
 	
 	drawPolygon([
 		[5, 35],
@@ -277,23 +296,23 @@ function drawplayPuase() {
 	ctx.font = "40px sans-serif";
 	ctx.fillStyle = "#fff";
 	var text = "II";
-	if (!(play)) text = ">";
+	if (core.playSpeed == 0) text = ">";
 	ctx.fillText(text, 20, 90);
 	
 	ctx.fillStyle = "#141414";
 	
 	drawPolygon([
-		[331.5, 35],
+		[326.5, 35],
 		[278, 35],
 		[278, 95],
-		[331.5, 122.5]
+		[326.5, 122.5]
 	]);
 	
 	ctx.fill();
 	ctx.stroke();
 	
 	ctx.fillStyle = "#fff";
-	ctx.fillText("⇋", 290, 90);
+	ctx.fillText("⇋", 285, 90);
 }
 
 function hexGridDrawer() {
@@ -301,9 +320,9 @@ function hexGridDrawer() {
 	
 	drawplayPuase();
 	
-	for (let i = 0; i < hexInfo.hexes.length; i++) {
-		data = hexInfo.hexes[i];
-		[col, row] = idxToGrid(i);
+	for (var i = 0; i < hexInfo.hexes.length; i++) {
+		var data = hexInfo.hexes[i];
+		var [col, row] = idxToGrid(i);
 		
 		const [x, y] = hexPos(col, row, hexInfo.width, hexInfo.height, hexInfo.gap);
 		
@@ -320,3 +339,33 @@ function hexGridDrawer() {
 		drawHexagon(ctx, x, y, data.img, hexInfo.width, hexInfo.height, hexInfo.gap);
 	}
 }
+
+function init() {
+	var loaderDisp = document.getElementById("loader");
+	loaderDisp.innerHTML = "Loading";
+	
+	const container = document.createElement( 'div' );
+	document.body.appendChild( container );
+	
+	core.initialiseDefaultScene(container);
+	
+	window.addEventListener( 'resize', onWindowResize );
+	
+	var loadThis = 'recrafter_initial';
+	core.loadScene(loadThis, './');
+	loadedInit();
+}
+
+function loadedInit() {
+	var loaderDisp = document.getElementById("loader");
+	
+	if (!core.sceneReady) {
+		var x = setTimeout(loadedInit, 50);
+		loaderDisp.innerHTML += ".";
+		return
+	}
+	loaderDisp.style.display = "none";
+	updateControls();
+}
+
+init();
