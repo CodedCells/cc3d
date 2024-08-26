@@ -152,7 +152,6 @@ function regexModelName(s) {
 
 function updateControls() {
 	loadHexImgs();
-	console.log(core.scene.children)
 	const sceneItems = core.scene.children[1].children;
 	for (var i = 0; i < sceneItems.length; i++) {
 		var name = sceneItems[i].name;
