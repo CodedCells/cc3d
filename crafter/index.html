@@ -19,6 +19,12 @@
 				}
 			}
 		</script>
-		<script type="module" src="recrafter.js"></script>
+		<script>
+	script = document.createElement('script');
+	script.type = "module";
+	script.src = "recrafter.js?v="+Math.random();
+
+	document.body.appendChild(script);
+		</script>
 	</body>
 </html>
