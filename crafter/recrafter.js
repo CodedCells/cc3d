@@ -357,6 +357,7 @@ function updateControls() {
 	
 	charUI.addEventListener("click", clickHex);
 	
+	onWindowResize();
 	core.applicationReady(true);
 	resumePlayback();
 }
@@ -485,7 +486,6 @@ function init() {
 	var loadThis = 'recrafter_initial';
 	core.loadScene(loadThis, './');
 	loadedInit();
-	onWindowResize()
 }
 
 function loadedInit() {
