@@ -247,6 +247,8 @@ function updateControls() {
 	charUI.addEventListener("mousemove", mouseMoveHex);
 	
 	charUI.addEventListener("click", clickHex);
+	
+	core.applicationReady(true);
 	resumePlayback();
 }
 
@@ -378,7 +380,7 @@ function init() {
 
 function loadedInit() {
 	var loaderDisp = document.getElementById("loader");
-	
+	core.applicationReady(false);
 	if (!core.sceneReady) {
 		var x = setTimeout(loadedInit, 50);
 		loaderDisp.innerHTML += ".";
