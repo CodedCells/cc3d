@@ -6,6 +6,8 @@ var bottoms = {};
 var tops = {};
 var scene;
 
+let textures;
+
 var charUI;
 var ctx;
 
@@ -13,9 +15,11 @@ var hasLoaded = false;
 var loadCount = 0;
 var expectLoad = 0;
 var currentSelection = {
-	"top": undefined,
-	"bottom": undefined
+	top: {model: undefined, skin: undefined, color: undefined},
+	bottom: {model: undefined, skin: undefined, color: undefined}
 };
+
+const collarColors = ["FFFFFF", "F07613", "BD44B3", "3AAFD9", "F8C627", "70B919", "ED8DAC", "3E4447", "8E8E86", "158991", "792AAC", "35399D", "724728", "546D1B", "A12722", "141519"];
 
 var hexInfo = {
 	"cols": 3,
@@ -27,11 +31,11 @@ var hexInfo = {
 	"hexes": [
 		{"id": "top", "src": "oSQgWmz"},
 		{"id": "bottom", "src": "J0MJ9Rj"},
+		{"id": "wolf", "src": "MEu8UmF"},
 		{"id": "cat", "src": "p19edEJ"},
-		{"id": "chicken", "src": "5sOwjMn"},
-		{"id": "donkey", "src": "jVSwlCj"},
 		{"id": "fox", "src": "cjPa2Gu"},
-		{"id": "wolf", "src": "MEu8UmF"}
+		//{"id": "donkey", "src": "jVSwlCj"},
+		//{"id": "chicken", "src": "5sOwjMn"},
 	]
 }
 
@@ -58,19 +62,46 @@ function playPause() {
 }
 
 function swapPositions() {
-	[currentSelection["top"], currentSelection["bottom"]] = [currentSelection["bottom"], currentSelection["top"]];
-	showHide(tops, currentSelection["top"]);
-	showHide(bottoms, currentSelection["bottom"]);
+	const top = currentSelection.top;
+	const bottom = currentSelection.bottom;
+	changeTo('top', bottom);
+	changeTo('bottom', top);
+}
+
+function changeTo(position, data) {
+	
+	if (data.skin === undefined) {
+		const allowed_textures = Object.keys(textures).filter(key => key.startsWith(data.model + "_"));
+	
+		if (allowed_textures.length)
+			data.skin = allowed_textures[Math.floor(Math.random() * allowed_textures.length)]
+		else
+			console.log(`No skins for ${data.model}`);
+	}
+	
+	if (data.color === undefined) {
+		data.color = Math.floor(Math.random() * 32);
+	}
+	
+	applyTextureToModel(textures[data.skin], `${position}_${data.model}_rig`, data.color);
+	currentSelection[position] = data;
+	
+	if (position == "top")
+		showHide(tops, currentSelection.top.model);
+	else
+		showHide(bottoms, currentSelection.bottom.model);
 }
 
 function showHide(targets, desired) {
+	const mob = desired;
 	for (const [sid, name] of Object.entries(targets)) {
 		const kind = name.split("_")[0];
+		
 		if (!(desired.startsWith(kind)))
 			desired = `${kind}_${desired}_rig`;
 		
-		core.scene.getObjectByName(sid).visible = name == desired;
 		core.scene.getObjectByName(sid).frustumCulled = false;
+		core.scene.getObjectByName(sid).visible = name == desired;
 	}
 }
 
@@ -141,38 +172,92 @@ function clickHex(event) {
 		return
 	}
 	
-	var posType = [tops, bottoms][hexInfo.modeId];
-	var posName = ["top", "bottom"][hexInfo.modeId];
-	currentSelection[posName] = hexInfo.hexes[id].id;
-	
-	showHide(posType, hexInfo.hexes[id].id);
+	const position = ["top", "bottom"][hexInfo.modeId];
+	changeTo(position, {"model": hexInfo.hexes[id].id})
 }
 
 function regexModelName(s) {
 	const match = s.match(/^(top|bottom)_(.*?)_rig$/);
 	return match ? match[2] : null;
-	showHide(posType, hexInfo.hexes[id].id);
+}
+
+function getAllMaterials(object) {
+    const materials = new Set(); // Using Set to avoid duplicate materials
+	
+    object.traverse((child) => {
+        if (child.isMesh && child.material) {
+            // If the material is an array (common for multi-materials), loop through it
+            if (Array.isArray(child.material)) {
+                child.material.forEach((mat) => materials.add(mat));
+            } else {
+                materials.add(child.material);
+            }
+        }
+    });
+
+    return Array.from(materials); // Convert the Set back to an Array
+}
+
+// Function to apply the selected texture to the currently selected model
+function applyTextureToModel(selectedTexture, selectedModelName, selectedColor) {
+    const selectedModel = core.scene.getObjectByName(selectedModelName);
+	
+	if (Number.isInteger(selectedColor))
+		selectedColor = collarColors[selectedColor];
+	
+    if (selectedModel) {
+        // Traverse the model and apply the texture to all meshes
+        selectedModel.traverse((child) => {
+            if (!(child.isMesh && child.material)) return // not a model or no matieral
+			if (child.material.name == "planks") return
+			console.log(child.material.name, child.userData);
+			child.material = child.material.clone();
+			
+			if (!child.userData.noSwapTextures)
+				child.material.map = selectedTexture;
+			
+			if (child.userData.tintCollar) {
+				child.visible = selectedColor !== undefined
+				if (selectedColor !== undefined)
+					child.material.color.set("#" + selectedColor);
+			}
+			
+			child.material.needsUpdate = true;
+        });
+    }
 }
 
 function updateControls() {
 	loadHexImgs();
+	
+	// Get all materials in the scene, even from nested children
+    const materials = getAllMaterials(core.scene);
+    textures = {}; // Store available textures
+
+    // Extract textures from materials
+    materials.forEach((material, index) => {
+        if (material.map) {
+            const textureName = material.map.name || `texture_${index}`;
+            textures[textureName] = material.map;
+        }
+    });
+	
 	const sceneItems = core.scene.children[1].children;
 	for (var i = 0; i < sceneItems.length; i++) {
-		var name = sceneItems[i].name;
-		if (name.startsWith('bottom'))
-			bottoms[name] = name;
+		const name = sceneItems[i].name;
 		
-		else if (name.startsWith('top'))
+		if (name.startsWith('bottom')) {
+			bottoms[name] = name;
+			sceneItems[i].position.x = 0;
+		}
+		else if (name.startsWith('top')) {
 			tops[name] = name;
+			sceneItems[i].position.x = 0;
+		}
 	}
 	
-	const defaultTop = "wolf";
-	const defaultBottom = "fox";
-	showHide(tops, defaultTop);
-	showHide(bottoms, defaultBottom);
-	
-	currentSelection["top"] = defaultTop;
-	currentSelection["bottom"] = defaultBottom;
+	changeTo("top", {model: "wolf"})
+	changeTo("bottom", {model: "wolf"})
 	
 	var btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
@@ -183,8 +268,7 @@ function updateControls() {
 	
 	var btn = document.createElement('select');
 	btn.onchange = function () {
-		showHide(bottoms, this.value);
-		currentSelection["bottom"] = this.value;
+		changeTo("bottom", {model: this.value});
 	}
 	btn.label = "Select Bottom";
 
@@ -194,14 +278,12 @@ function updateControls() {
 		opt.innerHTML = parsed;
 		opt.value = parsed;
 		btn.appendChild(opt);
-		//console.log(sid, name);
 	}
 	debugControls.appendChild(btn);
 
 	btn = document.createElement('select');
 	btn.onchange = function () {
-		showHide(tops, this.value);
-		currentSelection["top"] = this.value;
+		changeTo("top", {model: this.value});
 	}
 	btn.label = "Select Top";
 
@@ -211,9 +293,36 @@ function updateControls() {
 		opt.innerHTML = parsed;
 		opt.value = parsed;
 		btn.appendChild(opt);
-		//console.log(sid, name);
 	}
 	debugControls.appendChild(btn);
+	
+	// New Dropdown for Texture Selection
+    const textureTopDropdown = document.createElement('select');
+    textureTopDropdown.onchange = function () {
+		currentSelection.top.skin = this.value;
+		changeTo("top", currentSelection.top);
+    };
+    textureTopDropdown.label = "Select Top Texture";
+	
+	// New Dropdown for Texture Selection
+	const sortedTextureNames = Object.keys(textures).sort();
+	
+    const textureBottomDropdown = document.createElement('select');
+    textureBottomDropdown.onchange = function () {
+        currentSelection.bottom.skin = this.value;
+		changeTo("bottom", currentSelection.bottom);
+    };
+    textureBottomDropdown.label = "Select Bottom Texture";
+	
+    sortedTextureNames.forEach(textureName => {
+        const opt = document.createElement('option');
+        opt.innerHTML = textureName;
+        opt.value = textureName;
+        textureTopDropdown.appendChild(opt);
+        textureBottomDropdown.appendChild(opt.cloneNode(true));
+    });
+    debugControls.appendChild(textureTopDropdown);
+    debugControls.appendChild(textureBottomDropdown);
 	
 	btn = document.createElement('button');
 	btn.innerHTML = "Pause"
