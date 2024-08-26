@@ -10,9 +10,13 @@ var lastTime;
 export let sceneFile;
 export let playSpeed = 1;
 sceneReady = false;
+var applicationReadyFlag = false;
 
 export function setPlaySpeed(value) {
     playSpeed = value;
+}
+export function applicationReady(value) {
+    applicationReadyFlag = value;
 }
 
 export function setPixelRatio(v) {
@@ -165,12 +169,14 @@ function animate(now) {
 }
 
 export function render() {
-	if (camera) {
-		sceneReady = true;
-		stats.begin();
-		
-		renderer.render( scene, camera );
-		
-		stats.end();
-	}
+	if (!camera) return
+	
+	sceneReady = true;
+	if (!applicationReadyFlag) return
+	
+	stats.begin();
+	
+	renderer.render( scene, camera );
+	
+	stats.end();
 }
