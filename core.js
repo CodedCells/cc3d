@@ -10,7 +10,7 @@ var lastTime;
 export let sceneFile;
 export let playSpeed = 1;
 sceneReady = false;
-var applicationReadyFlag = false;
+var applicationReadyFlag = true;
 
 export function setPlaySpeed(value) {
     playSpeed = value;
