@@ -46,9 +46,13 @@ function onWindowResize() {
 	core.render();
 }
 
+function resumePlayback() {
+	core.setPlaySpeed(0.8 + (Math.random() * .5));
+}
+
 function playPause() {
 	if (core.playSpeed > 0) core.setPlaySpeed(0);
-	else core.setPlaySpeed(1);
+	else resumePlayback();
 	
 	hexGridDrawer();
 }
@@ -243,6 +247,7 @@ function updateControls() {
 	charUI.addEventListener("mousemove", mouseMoveHex);
 	
 	charUI.addEventListener("click", clickHex);
+	resumePlayback();
 }
 
 function isHexagonHovered(x, y, mouseX, mouseY, hi) {
