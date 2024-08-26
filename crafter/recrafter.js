@@ -216,6 +216,22 @@ function updateControls() {
 	btn.onclick = playPause;
 	debugControls.appendChild(btn);
 	
+	btn = document.createElement('button');
+	btn.innerHTML = "Set Speed"
+	btn.onclick = function () {
+		// Prompt the user for input
+		let userInput = prompt("Please enter a float number:");
+
+		// Parse the input as a float
+		let floatValue = parseFloat(userInput);
+
+		// Check if the input is a valid float number
+		if (!isNaN(floatValue)) {
+			core.setPlaySpeed(floatValue);
+		}
+	}
+	debugControls.appendChild(btn);
+	
 	charUI = document.createElement("CANVAS")
 	charUI.style.display = "block";
 	btnContainer.appendChild(charUI);
