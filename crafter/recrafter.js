@@ -210,7 +210,7 @@ function applyTextureToModel(selectedTexture, selectedModelName, selectedColor) 
         selectedModel.traverse((child) => {
             if (!(child.isMesh && child.material)) return // not a model or no matieral
 			if (child.material.name == "planks") return
-			console.log(child.material.name, child.userData);
+			//console.log(child.material.name, child.userData);
 			child.material = child.material.clone();
 			
 			if (!child.userData.noSwapTextures)
