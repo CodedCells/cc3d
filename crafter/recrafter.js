@@ -485,6 +485,7 @@ function init() {
 	var loadThis = 'recrafter_initial';
 	core.loadScene(loadThis, './');
 	loadedInit();
+	onWindowResize()
 }
 
 function loadedInit() {
