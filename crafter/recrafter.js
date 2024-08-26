@@ -130,7 +130,7 @@ function clickHex(event) {
 	
 	var id = hexInfo.hoverId;
 	
-	console.log("Hexagon clicked:", hexInfo.hoverId, hexInfo.hexes[id].id);
+	//console.log("Hexagon clicked:", hexInfo.hoverId, hexInfo.hexes[id].id);
 	
 	if (id < 2) {
 		hexInfo.modeId = id;
