@@ -423,6 +423,7 @@ function drawplayPuase() {
 	ctx.fillStyle = "#141414";
 	if (core.playSpeed > 0) ctx.fillStyle = "#EDD185";
 	
+	// play/pause
 	drawPolygon([
 		[5, 35],
 		[53.5, 35],
@@ -432,14 +433,9 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
-	ctx.font = "40px sans-serif";
-	ctx.fillStyle = "#fff";
-	var text = "II";
-	if (core.playSpeed == 0) text = ">";
-	ctx.fillText(text, 20, 90);
-	
 	ctx.fillStyle = "#141414";
 	
+	// swap button
 	drawPolygon([
 		[326.5, 35],
 		[278, 35],
@@ -449,10 +445,8 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
-	ctx.fillStyle = "#fff";
-	ctx.fillText("⇋", 285, 90);
 	
-	ctx.fillStyle = "#141414";
+	// options button
 	drawPolygon([
 		[112, 0],
 		[166.5, 30],
@@ -461,8 +455,14 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
-	ctx.font = "20px sans-serif";
+	ctx.font = "40px sans-serif";
 	ctx.fillStyle = "#fff";
+	var text = "II";
+	if (core.playSpeed == 0) text = ">";
+	ctx.fillText(text, 20, 90);
+	ctx.fillText("⇋", 285, 90);
+	
+	ctx.font = "20px sans-serif";
 	ctx.fillText("⚙", 158, 22);
 }
 
