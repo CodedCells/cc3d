@@ -70,13 +70,20 @@ function swapPositions() {
 	changeTo('bottom', top);
 }
 
+function randomChoice(listOfElements) {
+	if (listOfElements.length == 0) return;
+	if (listOfElements.length == 1) return listOfElements[0];
+	
+	return listOfElements[Math.floor(Math.random() * listOfElements.length)];
+}
+
 function changeTo(position, data) {
 	
 	if (data.skin === undefined) {
 		const allowed_textures = Object.keys(textures).filter(key => key.startsWith(data.model + "_"));
 	
 		if (allowed_textures.length)
-			data.skin = allowed_textures[Math.floor(Math.random() * allowed_textures.length)]
+			data.skin = randomChoice(allowed_textures);
 		else
 			console.log(`No skins for ${data.model}`);
 	}
@@ -277,8 +284,9 @@ function updateControls() {
 		}
 	}
 	
-	changeTo("top", {model: "wolf"})
-	changeTo("bottom", {model: "wolf"})
+	let randomMobs = ["wolf", "fox", "cat"];
+	changeTo("top", {model: randomChoice(randomMobs)})
+	changeTo("bottom", {model: randomChoice(randomMobs)})
 	
 	var btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
