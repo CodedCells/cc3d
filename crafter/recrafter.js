@@ -404,7 +404,6 @@ function drawHexagon(ctx, x, y, img, width, height, gap) {
 	]);
 	
 	ctx.fill();
-	ctx.stroke();
 	
 	if (img.complete)
 		if (img.naturalWidth > 0)
@@ -423,7 +422,6 @@ function drawplayPuase() {
 	]);
 	
 	ctx.fill();
-	ctx.stroke();
 	
 	ctx.font = "40px sans-serif";
 	ctx.fillStyle = "#fff";
@@ -441,7 +439,6 @@ function drawplayPuase() {
 	]);
 	
 	ctx.fill();
-	ctx.stroke();
 	
 	ctx.fillStyle = "#fff";
 	ctx.fillText("⇋", 285, 90);
@@ -459,13 +456,11 @@ function hexGridDrawer() {
 		const [x, y] = hexPos(col, row, hexInfo.width, hexInfo.height, hexInfo.gap);
 		
 		ctx.fillStyle = "#141414";
-		ctx.strokeStyle = "transparent";
 		if (hexInfo.hoverId == i)
 			ctx.fillStyle = "#EDD185";
 		
 		if (hexInfo.modeId == i) {
 			ctx.lineWidth = 5;
-			ctx.strokeStyle = "#EDD185";
 		}
 		
 		drawHexagon(ctx, x, y, data.img, hexInfo.width, hexInfo.height, hexInfo.gap);
