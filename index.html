@@ -17,7 +17,7 @@ Select, rotate and zoom to your desired viewing angles" />
 		<link rel="icon" type="image/x-icon" href="/cc3d/favicon.ico">
 	</head>
 
-	<body>
+	<body onload="fetchCookiemonster()">
 		
 		<script type="importmap">
 			{
@@ -27,24 +27,21 @@ Select, rotate and zoom to your desired viewing angles" />
 			}
 		</script>
 		
-		<div class="check">
-		<div class="check-inner">
-		<h1>CodedCells' Scene Loader</h1>
-		<p>This website contains material suitable only for Adults, <br>to continue please answer truthfully.</p>
-		<h2>Are you over 18?</h2>
-		<button onclick="safetypass()">Yes</button>
-		<button onclick="window.location = 'https://www.rfc-editor.org/rfc/rfc2324';">No</button>
-		</div>
-		</div>
+		<div id="safetyCheck" style="display:none"></div>
 		<script>
-function safetypass() {
+
+function run() {
 	script = document.createElement('script');
 	script.type = "module";
 	script.src = "menu.js?v="+Math.random();
-
-	document.body.appendChild(script);
 	
-	document.getElementsByClassName("check")[0].style.display = "none";
+	document.body.appendChild(script);
+}
+
+function fetchCookiemonster() {
+	script = document.createElement('script');
+	script.src = "/cc3d/cookiemonster.js?v="+Math.random();
+	document.body.appendChild(script);
 }
 	</script>
 		

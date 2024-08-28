@@ -20,7 +20,7 @@ body {
 	text-align: center;
 	vertical-align: bottom;
 }
-.check {
+#safetyCheck {
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -40,20 +40,20 @@ body {
 	border-radius: 25px;
 	user-select: none;
 }
-.check p {
+#safetyCheck p {
 	font-size: 120%;
 	color: #f06060;
 }
-.check h1 {
+#safetyCheck h1 {
 	font-weight: 100;
 	font-size: 250%;
 	margin: 0;
 }
-.check h2 {
+#safetyCheck h2 {
 	font-weight: 100;
 	font-size: 200%;
 }
-.check button {
+#safetyCheck button {
 	margin: 0 10px;
 	border: none;
 	padding: 5px;
