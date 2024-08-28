@@ -167,10 +167,12 @@ function clickHex(event) {
 	if (hexInfo.hoverId == null) {// not a hexagon
 		if (mouseY < 30)
 			toggleDebugControls();
-		else if (mouseX < 150)
-			playPause();
-		else
-			swapPositions();
+		else if (mouseY < 123) {
+			if (mouseX < 56)
+				playPause();
+			else if (mouseX > 277)
+				swapPositions();
+		}
 		return
 	}
 	
