@@ -11,6 +11,8 @@ let textures;
 var charUI;
 var ctx;
 
+let debugControls;
+
 var hasLoaded = false;
 var loadCount = 0;
 var expectLoad = 0;
@@ -153,10 +155,19 @@ function mouseMoveHex(event) {
 	return [mouseX, mouseY];
 }
 
+function toggleDebugControls() {
+	if (debugControls.style.display == "none")
+		debugControls.style.display = "block";
+	else
+		debugControls.style.display = "none";
+}
+
 function clickHex(event) {
 	var [mouseX, mouseY] = mouseMoveHex(event);
 	if (hexInfo.hoverId == null) {// not a hexagon
-		if (mouseX < 150)
+		if (mouseY < 30)
+			toggleDebugControls();
+		else if (mouseX < 150)
 			playPause();
 		else
 			swapPositions();
@@ -262,8 +273,9 @@ function updateControls() {
 	var btnContainer = document.getElementById("scenebtn");
 	btnContainer.innerHTML = "";
 	
-	const debugControls = document.createElement('div');
-	debugControls.className = "debugControls";
+	debugControls = document.createElement('div');
+	debugControls.id = "debugControls";
+	debugControls.style.display = "none";
 	btnContainer.appendChild(debugControls);
 	
 	var btn = document.createElement('select');
@@ -437,6 +449,19 @@ function drawplayPuase() {
 	
 	ctx.fillStyle = "#fff";
 	ctx.fillText("⇋", 285, 90);
+	
+	ctx.fillStyle = "#141414";
+	drawPolygon([
+		[112, 0],
+		[166.5, 30],
+		[220, 0]
+	]);
+	
+	ctx.fill();
+	
+	ctx.font = "20px sans-serif";
+	ctx.fillStyle = "#fff";
+	ctx.fillText("⚙", 158, 22);
 }
 
 function hexGridDrawer() {
