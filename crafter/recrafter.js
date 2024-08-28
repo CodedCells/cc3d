@@ -343,8 +343,8 @@ function updateControls() {
 	charUI = document.createElement("CANVAS")
 	charUI.style.display = "block";
 	btnContainer.appendChild(charUI);
-	charUI.width = 350;
-	charUI.height = 350;
+	charUI.width = 330;
+	charUI.height = 230;
 	ctx = charUI.getContext("2d");
 	hexGridDrawer();
 	
