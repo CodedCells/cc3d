@@ -33,7 +33,9 @@ function makeConsent(parentElement) {
 
 	// Create the <h1> element with text content
 	const heading1 = document.createElement('h1');
-	heading1.textContent = 'CodedCells\' Scene Loader';
+	if (typeof cmTitle === 'undefined') 
+		cmTitle = 'CodedCells\' Scene Loader';
+	heading1.textContent = cmTitle;
 
 	// Create the <p> element with text and line break
 	const paragraph = document.createElement('p');

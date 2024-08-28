@@ -18,7 +18,7 @@
 		.overbtn {user-select:none;}
 		</style>
 	</head>
-	<body>
+	<body onload="fetchCookiemonster()">
 		<div class="overbtn" id="scenebtn"></div>
 		<div id="loader">Initialising...</div>
 		<script type="importmap">
@@ -28,12 +28,22 @@
 				}
 			}
 		</script>
+		<div id="safetyCheck" style="display:none"></div>
 		<script>
+let cmTitle = "CodedCells Crafter";
+function run() {
 	script = document.createElement('script');
 	script.type = "module";
 	script.src = "recrafter.js?v="+Math.random();
 
 	document.body.appendChild(script);
-		</script>
+}
+
+function fetchCookiemonster() {
+	script = document.createElement('script');
+	script.src = "/cc3d/cookiemonster.js?v="+Math.random();
+	document.body.appendChild(script);
+}
+	</script>
 	</body>
 </html>
