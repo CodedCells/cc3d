@@ -162,11 +162,19 @@ function toggleDebugControls() {
 		debugControls.style.display = "none";
 }
 
+function goBack() {
+	window.location.href = window.location.href.replace(/\/[^\/]*\/?$/, '/');
+}
+
 function clickHex(event) {
 	var [mouseX, mouseY] = mouseMoveHex(event);
 	if (hexInfo.hoverId == null) {// not a hexagon
-		if (mouseY < 30)
-			toggleDebugControls();
+		if (mouseY < 30) {
+			if (mouseX < 110)
+				goBack();
+			else if (mouseX < 220)
+				toggleDebugControls();
+		}
 		else if (mouseY < 123) {
 			if (mouseX < 56)
 				playPause();
@@ -445,6 +453,15 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
+	// back button
+	drawPolygon([
+		[5, 0],
+		[105, 0],
+		[53.5, 30],
+		[5, 30]
+	]);
+	
+	ctx.fill();
 	
 	// options button
 	drawPolygon([
@@ -461,6 +478,7 @@ function drawplayPuase() {
 	if (core.playSpeed == 0) text = ">";
 	ctx.fillText(text, 20, 90);
 	ctx.fillText("⇋", 285, 90);
+	ctx.fillText("←", 20, 25);
 	
 	ctx.font = "20px sans-serif";
 	ctx.fillText("⚙", 158, 22);
