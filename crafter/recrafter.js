@@ -325,11 +325,6 @@ function updateControls() {
     debugControls.appendChild(textureBottomDropdown);
 	
 	btn = document.createElement('button');
-	btn.innerHTML = "Pause"
-	btn.onclick = playPause;
-	debugControls.appendChild(btn);
-	
-	btn = document.createElement('button');
 	btn.innerHTML = "Set Speed"
 	btn.onclick = function () {
 		// Prompt the user for input
