@@ -143,7 +143,11 @@ function getLoadSceneUI() {
 	
 	if (loadThis && loadThis != core.sceneFile) {
 		//console.log("chaging to", loadThis);
-		core.loadScene(loadThis)
+		let hash;
+		if (scenes[loadThis])
+			hash = scenes[loadThis][hash];
+		
+		core.loadScene(loadThis, undefined, hash);
 	}
 }
 

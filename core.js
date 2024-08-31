@@ -32,7 +32,7 @@ export function initialiseDefaultScene(c) {
 	c.appendChild( renderer.domElement );
 }
 
-export function loadScene(fn, path) {
+export function loadScene(fn, path, hash) {
 	sceneReady = false;
 	if (!stats) {
 		stats = new Stats();
@@ -40,6 +40,9 @@ export function loadScene(fn, path) {
 		stats.domElement.style.right = "0";
 		document.body.appendChild(stats.dom);
 	}
+	if (hash === undefined)
+		hash = Math.random()
+	console.log(hash);
 	
 	sceneFile = fn;
 	if (!camera)
@@ -62,7 +65,7 @@ export function loadScene(fn, path) {
 		path = '/cc3d/scenes/';
 	// model
 	const loader = new GLTFLoader().setPath( path );
-	loader.load(fn + ".glb?v="+Math.random(), function ( gltf ) {
+	loader.load(fn + ".glb?v="+hash, function ( gltf ) {
 		
 		// this magical placement of the function
 		animate();

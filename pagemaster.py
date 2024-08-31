@@ -1,6 +1,16 @@
 import json
 from os import mkdir, path
 from shutil import copyfile
+import hashlib
+
+def hash_file(file_path):
+    hash_obj = hashlib.new('sha1')
+    with open(file_path, 'rb') as file:
+        while chunk := file.read(8192):
+            hash_obj.update(chunk)
+
+    # Return the hexadecimal digest of the hash
+    return hash_obj.hexdigest()
 
 with open('scenes.json', 'r') as fh:
     scenes = json.load(fh)
@@ -12,6 +22,9 @@ if not path.isdir('s'):
     mkdir('s')
 
 for scene, info in scenes.items():
+
+    scenes[scene]['hash'] = hash_file(f'scenes/{scene}.glb')
+    
     if not path.isdir(f's/{scene}'):
         mkdir(f's/{scene}')
     
@@ -21,8 +34,12 @@ for scene, info in scenes.items():
 Select, rotate and zoom to your desired viewing angles.""")
         fh.write(out)
     
-    for sid in info.get('post_ids', []):
+    for sid in info.get('post_ids', {}).get('FA', []):
         if not path.isdir(f's/{sid}'):
             mkdir(f's/{sid}')
         
         copyfile(f's/{scene}/index.html', f's/{sid}/index.html')
+
+with open('scenes.json', 'w') as fh:
+    json.dump(scenes, fh, indent='\t')
+    
