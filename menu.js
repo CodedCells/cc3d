@@ -30,6 +30,17 @@ function onWindowResize() {
 	core.render();
 }
 
+function presentIDLinks(disp, source, ids) {
+	var out = disp;
+		
+	for (var i = 0; i < ids.length; i++) {
+		var d = ids[i];
+		if (i > 0) out += ", ";
+		out += `<a href="${source}${d}/">${d}</a>`;
+	}
+	return out += "<br>";
+}
+
 function presentBackInfo(sid, info) {
 	const optVisInfo = document.createElement('div');
 	const pageTitle = info.title + " - CodedCells 3D Scene Viewer";;
@@ -37,15 +48,16 @@ function presentBackInfo(sid, info) {
 	document.getElementById("ogTitle").content = pageTitle;
 	
 	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
-		
-	if (info.post_ids && info.post_ids.length) {
-		optVisInfo.innerHTML += "FA: ";
 	
-		for (var i = 0; i < info.post_ids.length; i++) {
-			var d = info.post_ids[i];
-			if (i > 0) optVisInfo.innerHTML += ", ";
-			optVisInfo.innerHTML += `<a href="https://furaffinity.net/view/${d}/">${d}</a>`;
-		}
+	if (info.post_ids) {
+		if (info.post_ids.FA && info.post_ids.FA.length)
+			optVisInfo.innerHTML += presentIDLinks("FA:", "https://furaffinity.net/view/", info.post_ids.FA);
+		if (info.post_ids.E6 && info.post_ids.E6.length)
+			optVisInfo.innerHTML += presentIDLinks("E621:", "https://e621.net/posts/", info.post_ids.E6);
+	}
+	
+	if (info.post_ids && info.post_ids.FA.length) {
+		
 	}
 	return optVisInfo;
 }
