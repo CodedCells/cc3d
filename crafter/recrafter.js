@@ -460,9 +460,17 @@ function drawHexagon(ctx, x, y, img, width, height, gap) {
 			ctx.drawImage(img, x-gap*1.5, y, height, height);
 }
 
+function magicStateSet(stateid, active) {
+	if (stateid == hexInfo.hoverId)
+		ctx.fillStyle = "#EDD185";
+	else if (active)
+		ctx.fillStyle = "#DDA34B";
+	else
+		ctx.fillStyle = "#141414";
+}
+
 function drawplayPuase() {
-	ctx.fillStyle = "#141414";
-	if (core.playSpeed > 0) ctx.fillStyle = "#EDD185";
+	magicStateSet(-4, core.playSpeed > 0);
 	
 	// play/pause
 	drawPolygon([
@@ -474,9 +482,9 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
-	ctx.fillStyle = "#141414";
-	
 	// swap button
+	magicStateSet(-5, false);
+	
 	drawPolygon([
 		[326.5, 35],
 		[278, 35],
@@ -487,6 +495,8 @@ function drawplayPuase() {
 	ctx.fill();
 	
 	// back button
+	magicStateSet(-1, false);
+	
 	drawPolygon([
 		[5, 0],
 		[105, 0],
@@ -497,6 +507,7 @@ function drawplayPuase() {
 	ctx.fill();
 	
 	// dummy button
+	magicStateSet(-3, false);
 	drawPolygon([
 		[326.5, 0],
 		[226.5, 0],
@@ -507,6 +518,7 @@ function drawplayPuase() {
 	ctx.fill();
 	
 	// options button
+	magicStateSet(-2, false);
 	drawPolygon([
 		[112, 0],
 		[166.5, 30],
@@ -540,13 +552,7 @@ function hexGridDrawer() {
 		
 		const [x, y] = hexPos(col, row, hexInfo.width, hexInfo.height, hexInfo.gap);
 		
-		ctx.fillStyle = "#141414";
-		if (hexInfo.hoverId == i)
-			ctx.fillStyle = "#EDD185";
-		
-		if (hexInfo.modeId == i) {
-			ctx.lineWidth = 5;
-		}
+		magicStateSet(i, hexInfo.modeId == i);
 		
 		drawHexagon(ctx, x, y, data.img, hexInfo.width, hexInfo.height, hexInfo.gap);
 	}
