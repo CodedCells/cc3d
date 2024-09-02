@@ -164,6 +164,11 @@ function mouseMoveHex(event) {
 	return [mouseX, mouseY];
 }
 
+function mouseLeaveHex(event) {
+	hexInfo.hoverId = null;
+	hexGridDrawer();
+}
+
 function toggleDebugControls() {
 	if (debugControls.style.display == "none")
 		debugControls.style.display = "block";
@@ -404,6 +409,7 @@ function updateControls() {
 	hexGridDrawer();
 	
 	charUI.addEventListener("mousemove", mouseMoveHex);
+	charUI.addEventListener("mouseleave", mouseLeaveHex);
 	
 	charUI.addEventListener("click", clickHex);
 	
