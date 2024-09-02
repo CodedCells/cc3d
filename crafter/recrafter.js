@@ -484,12 +484,13 @@ function drawplayPuase() {
 	ctx.fillStyle = "#fff";
 	var text = "II";
 	if (core.playSpeed == 0) text = ">";
-	ctx.fillText(text, 20, 90);
-	ctx.fillText("⇋", 285, 90);
-	ctx.fillText("←", 20, 25);
+	ctx.fillText(text, 20, 90); // play button
+	
+	ctx.fillText("⇋", 285, 90); // swap button
+	ctx.fillText("←", 20, 25); // back button
 	
 	ctx.font = "20px sans-serif";
-	ctx.fillText("⚙", 158, 22);
+	ctx.fillText("⚙", 158, 22); // option button
 }
 
 function hexGridDrawer() {
