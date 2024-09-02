@@ -292,25 +292,25 @@ function presentOrderedLinks(order) {
 
 	if (ascending) listorder = listorder.reverse();
 
-	for (var [i, sid] of Object.entries(listorder)) {
-		const vis = presentLink(sid, scenes[sid], abs);
-		linkDisp.appendChild(vis);
-	}
-
-	var optVis = document.createElement('a');
+var optVis = document.createElement('a');
 
 	optVis.className = "menuOption";
 	optVis.href = "/cc3d/crafter/"
 
 	const optVisTitle = document.createElement('span');
 
-	optVisTitle.innerHTML += '<span class="mode-icon mode-icon-animated"></span> ';
+	optVisTitle.innerHTML += '<span class="mode-icon mode-icon-interactive"></span> ';
 
 	optVisTitle.innerHTML += "Crafter";
 
 	optVis.appendChild(optVisTitle);
 
 	linkDisp.appendChild(optVis);
+
+	for (var [i, sid] of Object.entries(listorder)) {
+		const vis = presentLink(sid, scenes[sid], abs);
+		linkDisp.appendChild(vis);
+	}
 }
 
 init();
