@@ -471,6 +471,16 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
+	// dummy button
+	drawPolygon([
+		[326.5, 0],
+		[226.5, 0],
+		[277, 30],
+		[326.5, 30]
+	]);
+	
+	ctx.fill();
+	
 	// options button
 	drawPolygon([
 		[112, 0],
@@ -491,6 +501,7 @@ function drawplayPuase() {
 	
 	ctx.font = "20px sans-serif";
 	ctx.fillText("⚙", 158, 22); // option button
+	ctx.fillText("...", 285, 22); // dummy botton
 }
 
 function hexGridDrawer() {
