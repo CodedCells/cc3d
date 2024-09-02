@@ -154,6 +154,8 @@ function mouseMoveHex(event) {
 			break;
 		}
 	}
+	if (newHexHovered == null)
+		newHexHovered = detectNonHexes(mouseX, mouseY, false);
 	
 	if (newHexHovered !== hexInfo.hoverId) {
 		hexInfo.hoverId = newHexHovered;
@@ -173,21 +175,44 @@ function goBack() {
 	window.location.href = window.location.href.replace(/\/[^\/]*\/?$/, '/');
 }
 
+function detectNonHexes(mouseX, mouseY, action) {
+	var state = null;
+	var func = null;
+	
+	if (mouseY < 30) {
+		if (mouseX < 110) {// back button
+			state = -1;
+			func = goBack;
+		}
+		else if (mouseX < 220) {// option button
+			state = -2;
+			func = toggleDebugControls;
+		}
+		else {// dummy button
+			state = -3;
+		}
+	}
+	else if (mouseY < 123) {
+		if (mouseX < 56) {// play button
+			state = -4;
+			func = playPause;
+		}
+		else if (mouseX > 277) {// swap button
+			state = -5;
+			func = swapPositions;
+		}
+	}
+	if (state != null) {
+		if (action) // run if to act
+			func();
+	}
+	return state;
+}
+
 function clickHex(event) {
 	var [mouseX, mouseY] = mouseMoveHex(event);
-	if (hexInfo.hoverId == null) {// not a hexagon
-		if (mouseY < 30) {
-			if (mouseX < 110)
-				goBack();
-			else if (mouseX < 220)
-				toggleDebugControls();
-		}
-		else if (mouseY < 123) {
-			if (mouseX < 56)
-				playPause();
-			else if (mouseX > 277)
-				swapPositions();
-		}
+	if (hexInfo.hoverId == null || hexInfo.hoverId < 0) {// not a hexagon
+		detectNonHexes(mouseX, mouseY, true);
 		return
 	}
 	
