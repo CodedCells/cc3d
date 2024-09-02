@@ -470,6 +470,39 @@ function magicStateSet(stateid, active) {
 }
 
 function drawplayPuase() {
+	// back button
+	magicStateSet(-1, false);
+	
+	drawPolygon([
+		[5, 0],
+		[105, 0],
+		[53.5, 30],
+		[5, 30]
+	]);
+	
+	ctx.fill();
+	
+	// options button
+	magicStateSet(-2, false);
+	drawPolygon([
+		[112, 0],
+		[166.5, 30],
+		[220, 0]
+	]);
+	
+	ctx.fill();
+	
+	// dummy button
+	magicStateSet(-3, false);
+	drawPolygon([
+		[326.5, 0],
+		[226.5, 0],
+		[277, 30],
+		[326.5, 30]
+	]);
+	
+	ctx.fill();
+	
 	magicStateSet(-4, core.playSpeed > 0);
 	
 	// play/pause
@@ -490,39 +523,6 @@ function drawplayPuase() {
 		[278, 35],
 		[278, 95],
 		[326.5, 122.5]
-	]);
-	
-	ctx.fill();
-	
-	// back button
-	magicStateSet(-1, false);
-	
-	drawPolygon([
-		[5, 0],
-		[105, 0],
-		[53.5, 30],
-		[5, 30]
-	]);
-	
-	ctx.fill();
-	
-	// dummy button
-	magicStateSet(-3, false);
-	drawPolygon([
-		[326.5, 0],
-		[226.5, 0],
-		[277, 30],
-		[326.5, 30]
-	]);
-	
-	ctx.fill();
-	
-	// options button
-	magicStateSet(-2, false);
-	drawPolygon([
-		[112, 0],
-		[166.5, 30],
-		[220, 0]
 	]);
 	
 	ctx.fill();
