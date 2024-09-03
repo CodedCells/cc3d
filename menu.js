@@ -268,6 +268,15 @@ function presentLinks() {
 	sceneSelectDiv.appendChild(orderVis);
 	sceneSelectDiv.appendChild(linkDisp);
 	sceneMenu.appendChild(sceneSelectDiv);
+	
+	const divBlurb = document.createElement('p');
+	divBlurb.innerHTML = `This is an interractive scene viewer showcasing art by CodedCells and his friends.<br>
+Since the art is in full 3d you can rotate, pan and zoom to see all the details, and possibly secrets hidden too.<br>
+&#x2727; denotes animated scenes.<br>
+&#x2B21 denotes further customisations.
+More content to be added.
+<a href="https://www.furaffinity.net/user/codedcells">CodedCells on FA</a>`;
+	sceneMenu.appendChild(divBlurb);
 
 	presentOrderedLinks();
 }
