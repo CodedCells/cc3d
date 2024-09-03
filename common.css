@@ -66,7 +66,6 @@ body {
 }
 #sceneMenu {
 	background: hwb(0deg 0% 100% / 25%);
-	display: inline-block;
 	position: fixed;
 	z-index: 34;
 	line-height: 150%;
@@ -75,11 +74,21 @@ body {
 	max-height: calc(100vh - 1em);
 	overflow: auto;
 }
+#linkDisp {
+	display: flex;
+	flex-flow: row wrap;
+	gap: 0.5em;
+	justify-content: center;
+	font-size: initial;
+}
 
 @media (max-width: 600px) {
   .menuMain {
 	  width: 100vw;
 	  height: 100vh;
+  }
+  #sceneMenu {
+	  padding: 0;
   }
   .menuMain > div {
 	  padding-bottom: max(10vh, 30px);
@@ -87,9 +96,16 @@ body {
 }
 
 .menuOption {
-	display: table;
-	opacity: 0.6;
+	display: flex;
+	flex-flow: column wrap;
+	align-self: baseline;
 	cursor: pointer;
+	width: 300px;
+	font-size: 130%;
+}
+
+.menuOption img {
+	max-width: 100%;
 }
 
 a {

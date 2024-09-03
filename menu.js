@@ -2,9 +2,13 @@ import * as core from './core.js';
 
 var fails = 0;
 var scenes = {};
+var sceneIcons = {};
 var sceneIds = {};
 var storedOrder;
 const linkDisp = document.createElement('span');
+linkDisp.id = "linkDisp";
+const orderVis = document.createElement('div');
+orderVis.id = "orderVis";
 
 function reload() {
 	var newState = window.location.pathname;
@@ -29,6 +33,10 @@ function onWindowResize() {
 	core.render();
 }
 
+function hideButtons() {
+	document.getElementById("sceneMenu").style.display = "none";
+}
+
 function presentIDLinks(disp, source, ids) {
 	var out = disp;
 
@@ -45,8 +53,11 @@ function presentBackInfo(sid, info) {
 	const pageTitle = info.title + " - CodedCells 3D Scene Viewer";;
 	document.title = pageTitle;
 	document.getElementById("ogTitle").content = pageTitle;
-
-	optVisInfo.innerHTML = `<h3>${info.title}</h3>`;
+	
+	const divTitle = document.createElement('h3');
+	divTitle.innerHTML = info.title;
+	divTitle.onclick = hideButtons;
+	optVisInfo.appendChild(divTitle);
 
 	if (info.post_ids) {
 		if (info.post_ids.FA && info.post_ids.FA.length)
@@ -159,6 +170,25 @@ function getLoadSceneUI() {
 	}
 }
 
+
+function fetchSceneIcons() {
+	fetch('/cc3d/icons.json?v=' + Math.random())
+		.then(response => response.json()).catch(error => {
+			console.error('Error fetching JSON:', error);
+			if (fails++ < 6) {
+				const x = setTimeout(fetchScenes, 500);
+			}
+			else
+				presentFail();
+		})
+		.then(data => {
+			// Call a function or do something with the JSON data
+			sceneIcons = data;
+			reverseSceneIDs();
+			getLoadSceneUI();
+		});
+}
+
 function fetchScenes() {
 	fetch('/cc3d/scenes.json?v=' + Math.random())
 		.then(response => response.json()).catch(error => {
@@ -172,8 +202,7 @@ function fetchScenes() {
 		.then(data => {
 			// Call a function or do something with the JSON data
 			scenes = data;
-			reverseSceneIDs();
-			getLoadSceneUI();
+			fetchSceneIcons();
 		});
 }
 
@@ -196,6 +225,12 @@ function presentLink(sid, info, abs) {
 
 	optVisTitle.innerHTML += info.title;
 
+	optVis.appendChild(optVisTitle);
+	
+	const optVisImage = document.createElement('img');
+	optVisImage.src = "data:image/webp;base64," + sceneIcons[sid];
+	
+	optVis.appendChild(optVisImage);
 	optVis.appendChild(optVisTitle);
 	return optVis;
 }
@@ -228,7 +263,9 @@ function presentLinks() {
 
 	const divTitle = document.createElement('h2');
 	divTitle.innerHTML = "Scene Loader";
+	divTitle.onclick = hideButtons;
 	sceneSelectDiv.appendChild(divTitle);
+	sceneSelectDiv.appendChild(orderVis);
 	sceneSelectDiv.appendChild(linkDisp);
 	sceneMenu.appendChild(sceneSelectDiv);
 
@@ -266,6 +303,7 @@ function presentOrderedLinks(order) {
 	const abs = window.location.pathname.includes("sceneloader_nsfw.html");
 
 	var rx = 0;
+	orderVis.innerHTML = "";
 	for (var [name] of Object.entries(orderings)) {
 		var optVis = document.createElement('div');
 		optVis.className = "orderOption";
@@ -275,7 +313,7 @@ function presentOrderedLinks(order) {
 		optVis.id = name;
 		optVis.style.backgroundPositionX = `-${48 * rx++}px`;
 		optVis.onclick = sortScenesTrigger;
-		linkDisp.appendChild(optVis);
+		orderVis.appendChild(optVis);
 
 		var optVis = document.createElement('div');
 		optVis.className = "orderOption";
@@ -285,7 +323,7 @@ function presentOrderedLinks(order) {
 		optVis.id = name + "_asc";
 		optVis.style.backgroundPositionX = `-${48 * rx++}px`;
 		optVis.onclick = sortScenesTrigger;
-		linkDisp.appendChild(optVis);
+		orderVis.appendChild(optVis);
 	}
 
 	var listorder = orderings[order](scenes);
@@ -302,7 +340,11 @@ var optVis = document.createElement('a');
 	optVisTitle.innerHTML += '<span class="mode-icon mode-icon-interactive"></span> ';
 
 	optVisTitle.innerHTML += "Crafter";
-
+	
+	const optVisImage = document.createElement('img');
+	optVisImage.src = "data:image/webp;base64," + sceneIcons.crafter;
+	
+	optVis.appendChild(optVisImage);
 	optVis.appendChild(optVisTitle);
 
 	linkDisp.appendChild(optVis);
