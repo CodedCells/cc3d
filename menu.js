@@ -172,7 +172,12 @@ function getLoadSceneUI() {
 
 
 function fetchSceneIcons() {
-	fetch('/cc3d/icons.json?v=' + Math.random())
+	var seed = "";
+	for (var [name, data] of Object.entries(scenes)) {
+		seed += data.hash.substr(0, 2);
+	}
+	
+	fetch('/cc3d/icons.json?v=' + seed)
 		.then(response => response.json()).catch(error => {
 			console.error('Error fetching JSON:', error);
 			if (fails++ < 6) {
