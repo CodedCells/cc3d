@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8" />
+	<title>Minecraft Skin Viewer</title>
+	<style>
+		* {
+			box-sizing: border-box;
+		}
+
+		body {
+			margin: 0;
+			font-family: 'Segoe UI', sans-serif;
+			color: #fff;
+			overflow: hidden;
+			background: rgb(188,188,188);
+			background: radial-gradient(circle, rgba(188,188,188,1) 0%, rgba(109,109,109,1) 90%);
+		}
+
+		#ui {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			background: rgba(0, 0, 0, 0.6);
+			padding: 20px;
+			border-radius: 12px;
+			z-index: 10;
+			display: flex;
+			flex-direction: column;
+			gap: 10px;
+			max-width: 280px;
+		}
+
+		input[type="text"], input[type="file"], #modelSelector {
+			background: #222;
+			border: 1px solid #555;
+			color: #fff;
+			padding: 8px;
+			border-radius: 5px;
+			width: 100%;
+		}
+
+		button {
+			padding: 8px;
+			background: #00aa88;
+			border: none;
+			color: white;
+			cursor: pointer;
+			border-radius: 5px;
+			font-weight: bold;
+		}
+
+		button:hover {
+			background: #009977;
+		}
+
+		canvas#skinPreview {
+			width: 256px;
+			image-rendering: pixelated;
+			border: 1px solid #fff;
+			align-self: center;
+			background-color: #000;
+			transition: background-color 1s;
+		}
+		canvas#skinPreview:hover {
+			background-color: #fff;
+		}
+	</style>
+</head>
+<body>
+	<div id="ui">
+		<input type="text" id="username" placeholder="Enter Minecraft username" value="notch" />
+		<button id="loadSkinButton">Load Skin</button>
+		<input type="file" id="skinUpload" accept="image/png" />
+<select id="modelSelector">
+	<option value="auto" selected>Auto Detect</option>
+	<option value="wide">Wide</option>
+	<option value="slim">Slim</option>
+</select>
+		<canvas id="skinPreview" width="64" height="64"></canvas>
+	</div>
+
+	<script type="importmap">
+		{
+			"imports": {
+				"three": "./rip/three.module.min.js"
+			}
+		}
+	</script>
+
+	<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from './rip/GLTFLoader.js';
+
+let scene, camera, renderer, model, skinTexture;
+
+const canvasPreview = document.getElementById('skinPreview');
+const previewCtx = canvasPreview.getContext('2d');
+
+function onWindowResize() {
+	if (camera) {
+		camera.aspect = window.innerWidth / window.innerHeight;
+		camera.updateProjectionMatrix();
+	}
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	render();
+}
+
+async function init() {
+	scene = new THREE.Scene();
+	camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+	renderer = new THREE.WebGLRenderer({
+		antialias: true,
+		alpha: true
+	});
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.toneMapping = THREE.LinearToneMapping;
+	renderer.toneMappingExposure = 1;
+	document.body.appendChild(renderer.domElement);
+
+	const light = new THREE.DirectionalLight(0xffffff, 1);
+	light.position.set(0, 1, 1).normalize();
+	scene.add(light);
+	
+	const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+	scene.add(ambientLight);
+
+	camera.position.y = 1.6;
+	camera.position.z = 3;
+
+	await loadGLBModel();
+	
+	window.addEventListener('resize', onWindowResize);
+	animate();
+	loadUsernameSkin(); // Load default
+}
+
+function render() {
+	renderer.render(scene, camera);
+}
+
+function animate() {
+	requestAnimationFrame(animate);
+	if (model) model.rotation.y += 0.01;
+	render();
+}
+
+async function loadGLBModel() {
+	const loader = new GLTFLoader();
+	return new Promise((resolve, reject) => {
+		loader.load('rip/sv.glb', (gltf) => {
+			model = gltf.scene;
+
+			const animations = gltf.animations;
+			const mixer = new THREE.AnimationMixer(model); // Assuming 'model' is your GLTF scene
+
+			animations.forEach((clip) => {
+				mixer.clipAction(clip).play();
+			});
+
+			mixer.update(0);
+
+			scene.add(model);
+			if (skinTexture) applySkinTexture();
+			resolve();
+		}, undefined, (err) => {
+			console.error("Failed to load model:", err);
+			reject(err);
+		});
+	});
+}
+
+function applySkinTexture() {
+	if (!model || !skinTexture) return;
+
+	model.traverse((child) => {
+		if (child.isMesh && child.material) {
+			const materials = Array.isArray(child.material) ? child.material : [child.material];
+			materials.forEach((mat) => {
+				mat.map = skinTexture;
+				mat.transparent = true;
+				mat.alphaTest = 0.5;
+				mat.needsUpdate = true;
+			});
+		}
+	});
+}
+
+function isRegionAllBlack(ctx, x, y, width, height) {
+	const data = ctx.getImageData(x, y, width, height).data;
+	for (let i = 0; i < data.length; i += 4) {
+		if (data[i] !== 0 || data[i + 1] !== 0 || data[i + 2] !== 0 || data[i + 3] !== 255) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function copyMirroredRegion(sx, sy, dx, dy, sw, sh) {
+	previewCtx.save()
+	previewCtx.translate(dx + sw, dy);
+	
+	// Flip horizontally
+	previewCtx.scale(-1, 1);
+	
+	// Draw the copied section of the image
+	previewCtx.drawImage(canvasPreview, sx, sy, sw, sh, 0, 0, sw, sh);
+	
+	// Restore to normal drawing
+	previewCtx.restore();;
+}
+
+function normalizeSkinImage(image, callback) {
+	const isOldFormat = image.height === 32 && image.width === 64;
+
+	previewCtx.clearRect(0, 0, 64, 64);
+	previewCtx.drawImage(image, 0, 0);
+
+	if (isRegionAllBlack(previewCtx, 32, 0, 32, 16)) {
+		previewCtx.clearRect(32, 0, 32, 16);
+	}
+	
+	if (isOldFormat) {
+		// convert old format
+		
+		// legs
+		copyMirroredRegion(0, 16, 16, 48, 12, 16);
+		previewCtx.clearRect(16, 48, 4, 4);
+		copyMirroredRegion(8, 16, 24, 48, 4, 4);
+		copyMirroredRegion(12, 20, 28, 52, 4, 12);
+
+		// arms
+		copyMirroredRegion(40, 16, 32, 48, 12, 16);
+		previewCtx.clearRect(32, 48, 4, 4);
+		copyMirroredRegion(48, 16, 40, 48, 4, 4);
+		copyMirroredRegion(52, 20, 44, 52, 4, 12);
+	}
+	
+	const newImage = new Image();
+	newImage.onload = () => callback(newImage);
+	newImage.src = canvasPreview.toDataURL();
+}
+
+function toggleModel(modelType) {
+	if (!model) return;
+
+	model.traverse((child) => {
+		if (child.name === "body_slim") {
+			child.visible = modelType === "Slim";
+		} else if (child.name === "body_wide") {
+			child.visible = modelType === "Wide";
+		}
+	});
+}
+
+async function loadUsernameSkin() {
+	const username = document.getElementById('username').value.trim();
+	const manualSelect = document.getElementById('modelSelector').value;
+
+	if (!username) return;
+
+	try {
+		// Step 1: Get UUID
+		const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+		if (!profileRes.ok) throw new Error("Invalid username");
+		const profile = await profileRes.json();
+
+		// Step 2: Get session profile and skin URL
+		const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${profile.id}`);
+		const sessionData = await sessionRes.json();
+		const textureProp = sessionData.properties.find(p => p.name === "textures");
+		const decoded = JSON.parse(atob(textureProp.value));
+		const skinUrl = decoded.textures.SKIN.url;
+
+		// Step 3: Determine model type
+		let modelType = "Wide"; // default
+		if (manualSelect === "auto") {
+			modelType = decoded.textures.SKIN.metadata?.model === "slim" ? "Slim" : "Wide";
+		} else {
+			modelType = manualSelect === "slim" ? "Slim" : "Wide";
+		}
+
+		// Step 4: Load and normalize skin image
+		const skinRes = await fetch(skinUrl);
+		const blob = await skinRes.blob();
+		const url = URL.createObjectURL(blob);
+
+		const img = new Image();
+		img.onload = () => {
+			normalizeSkinImage(img, (normalized) => {
+				applyTextureFromImage(normalized);
+				toggleModel(modelType);
+			});
+		};
+		img.src = url;
+	} catch (err) {
+		alert("Failed to load skin: " + err.message);
+	}
+}
+
+function applyTextureFromImage(image) {
+	const tex = new THREE.Texture(image);
+	tex.magFilter = THREE.NearestFilter;
+	tex.minFilter = THREE.LinearFilter;
+	tex.generateMipmaps = false;
+	tex.flipY = false;
+	tex.colorSpace = THREE.SRGBColorSpace;
+	tex.needsUpdate = true;
+	skinTexture = tex;
+	applySkinTexture();
+}
+
+document.getElementById('loadSkinButton').addEventListener('click', loadUsernameSkin);
+
+document.getElementById('skinUpload').addEventListener('change', (event) => {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	const manualSelect = document.getElementById('modelSelector').value;
+	let modelType = "Wide"; // default
+	modelType = manualSelect === "slim" ? "Slim" : "Wide";
+	
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		const img = new Image();
+		img.onload = () => {
+			normalizeSkinImage(img, (normalized) => {
+				applyTextureFromImage(normalized);
+				toggleModel(modelType);
+			});
+		};
+		img.src = e.target.result;
+	};
+	reader.readAsDataURL(file);
+});
+
+document.getElementById('modelSelector').addEventListener('change', () => {
+	const selection = document.getElementById('modelSelector').value;
+	if (!model || !skinTexture) return; // Don't try to switch if nothing loaded
+
+	let modelType = "Wide";
+	if (selection === "slim") modelType = "Slim";
+	else if (selection === "wide") modelType = "Wide";
+	else return; // "auto" shouldn't do anything here
+
+	toggleModel(modelType);
+});
+
+init();
+	</script>
+</body>
+</html>
