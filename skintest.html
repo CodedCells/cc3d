@@ -261,7 +261,7 @@ async function loadUsernameSkin() {
 
 	try {
 		// Step 1: Get UUID
-		const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+		const profileRes = await fetch(`httpss://api.mojang.com/users/profiles/minecraft/${username}`);
 		if (!profileRes.ok) throw new Error("Invalid username");
 		const profile = await profileRes.json();
 
