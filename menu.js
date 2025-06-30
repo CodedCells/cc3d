@@ -72,6 +72,45 @@ function presentBackInfo(sid, info) {
 	return optVisInfo;
 }
 
+function superTogglePause(event) {
+	let output = core.togglePause();
+	
+	// Toggle play pause icon
+	event.target.innerHTML = ["&#9208;", "&#9205;"][+output];
+}
+
+function addSceneControls(sceneControls) {
+	const speedLabel = document.createElement('label');
+	speedLabel.innerHTML = "Speed:";
+	speedLabel.style.marginRight = "10px";
+	sceneControls.appendChild(speedLabel);
+
+	const speedSlider = document.createElement('input');
+	speedSlider.type = "range";
+	speedSlider.min = "0.1";
+	speedSlider.max = "10";
+	speedSlider.step = "0.1";
+	speedSlider.value = "1"; // Default speed
+	speedSlider.oninput = function() {
+		core.setPlaySpeed(parseFloat(this.value));
+	};
+	sceneControls.appendChild(speedSlider);
+
+	const speedValueDisplay = document.createElement('span');
+	speedValueDisplay.innerHTML = "1.0x";
+	speedSlider.oninput = function() {
+		const speed = parseFloat(this.value);
+		core.setPlaySpeed(speed);
+		speedValueDisplay.innerHTML = speed.toFixed(1) + "x";
+	};
+	sceneControls.appendChild(speedValueDisplay);
+	
+	const ppButton = document.createElement('a');
+	ppButton.innerHTML = "&#9208;"; // pause icon
+	ppButton.onclick = superTogglePause;
+	sceneControls.appendChild(ppButton);
+}
+
 function presentBack(sid, abs) {
 	const sceneMenu = document.getElementById("sceneMenu");
 	sceneMenu.innerHTML = "";
@@ -103,8 +142,14 @@ function presentBack(sid, abs) {
 		sceneSelectDiv.appendChild(optVis);
 	}
 
+	const sceneControls = document.createElement('div');
+	sceneControls.className = "sceneControls";
+
 	if (info) {
 		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
+		if (info.type == "animated")
+			addSceneControls(sceneControls)
+		
 	} else {
 		sceneSelectDiv.innerHTML += `<br>An error, cannot find ${sid}`;
 		if (parseInt(sid) >= 28747249)
@@ -112,6 +157,7 @@ function presentBack(sid, abs) {
 	}
 
 	sceneMenu.appendChild(sceneSelectDiv);
+	sceneMenu.appendChild(sceneControls);
 }
 
 function init() {

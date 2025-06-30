@@ -9,12 +9,19 @@ export let sceneReady, camera, controls, scene, renderer, model, animations, mix
 var lastTime;
 export let sceneFile;
 export let playSpeed = 1;
+export let playPaused = false;
 sceneReady = false;
 var applicationReadyFlag = true;
 
 export function setPlaySpeed(value) {
 	playSpeed = value;
 }
+
+export function togglePause() {
+	playPaused = !playPaused;
+	return playPaused;
+}
+
 export function applicationReady(value) {
 	applicationReadyFlag = value;
 }
@@ -130,6 +137,9 @@ export function loadScene(fn, path, hash) {
 	if (controls)
 		controls.dispose();
 
+	playSpeed = 1;
+	playPaused = false;
+	
 	controls = new OrbitControls(camera, renderer.domElement);
 	controls.addEventListener('change', render); // use if there is no animation loop
 	controls.minDistance = 0;
@@ -167,7 +177,7 @@ function animate(now) {
 	var elapsed = now - lastTime;
 	lastTime = now;
 
-	if (mixer && playSpeed > 0)
+	if (mixer && playSpeed > 0 && !playPaused)
 		mixer.update(elapsed / 1000 * playSpeed); // 'deltaTime' is the time difference between frames
 
 	render();
