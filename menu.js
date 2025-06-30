@@ -150,7 +150,7 @@ function presentBack(sid, abs) {
 
 	if (info) {
 		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
-		if (info.type == "animated")
+		if (info.type == "animated" || info.type == "motion")
 			addSceneControls(sceneControls)
 		
 	} else {
