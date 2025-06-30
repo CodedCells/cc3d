@@ -1,4 +1,7 @@
-import * as core from './core.js';
+//import * as core from './core.js';
+
+const modulePath = "./core.js?v=" + Math.random();
+const core = await import(modulePath);
 
 var fails = 0;
 var scenes = {};
