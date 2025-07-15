@@ -91,6 +91,19 @@ body {
 	font-size: initial;
 }
 
+.sceneOption {
+	display: inline-block;
+	align-self: baseline;
+	cursor: pointer;
+	font-size: 130%;
+	margin-right: 20pt;
+}
+
+.sceneOption:hover {
+	color: #EDD185;
+	opacity: 1;
+}
+
 @media (max-width: 600px) {
 	.menuMain {
 		width: 100vw;

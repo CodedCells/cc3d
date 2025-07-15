@@ -8,6 +8,7 @@ var scenes = {};
 var sceneIcons = {};
 var sceneIds = {};
 var storedOrder;
+let loadThis;
 const linkDisp = document.createElement('span');
 linkDisp.id = "linkDisp";
 const orderVis = document.createElement('div');
@@ -15,7 +16,7 @@ orderVis.id = "orderVis";
 
 function reload() {
 	var newState = window.location.pathname;
-	var query = this.id;
+	var query = this?.id;// this?? id?? yes, maybe
 
 	if (query)
 		newState += "?s=" + query;
@@ -51,8 +52,18 @@ function presentIDLinks(disp, source, ids) {
 	return out += "<br>";
 }
 
-function presentBackInfo(sid, info) {
+function presentSceneInfo(sid, info) {
+	
 	const optVisInfo = document.createElement('div');
+	
+	if (!info) {// no info
+		optVisInfo.innerHTML += `<br>An error, cannot find ${sid}`;
+		if (parseInt(sid) >= 28747249)
+			optVisInfo.innerHTML += "<br>Perhaps wrong post ID?";
+		
+		return optVisInfo
+	}
+	
 	const pageTitle = info.title + " - CodedCells 3D Scene Viewer";;
 	document.title = pageTitle;
 	document.getElementById("ogTitle").content = pageTitle;
@@ -70,7 +81,7 @@ function presentBackInfo(sid, info) {
 	}
 
 	if (info.post_ids && info.post_ids.FA.length) {
-
+		// empty
 	}
 	return optVisInfo;
 }
@@ -114,53 +125,57 @@ function addSceneControls(sceneControls) {
 	sceneControls.appendChild(ppButton);
 }
 
-function presentBack(sid, abs) {
+function reloadOrExplode() {
+	if (scenes[loadThis])
+		reload();
+	else
+		window.location.href = "/cc3d/sceneloader_nsfw.html";
+}
+
+function showInfo() {
+	core.setQuality('low')
+}
+
+function showOptions() {
+	core.setQuality('high')
+}
+
+function createControlButton(label, action) {
+	const cButton = document.createElement('div');
+	cButton.className = "sceneOption";
+	
+	const cButtonTitle = document.createElement('a');
+	cButtonTitle.innerHTML = label;
+	cButton.onclick = action;
+	
+	cButton.appendChild(cButtonTitle);
+	return cButton;
+}
+
+function presentBack(sid) {
 	const sceneMenu = document.getElementById("sceneMenu");
 	sceneMenu.innerHTML = "";
 
 	const sceneSelectDiv = document.createElement('div');
 	sceneMenu.className = "menuBack";
-
-	const optVis = document.createElement('div');
-
-	optVis.className = "menuOption";
-	optVis.id = "";
-
-	const info = scenes[sid];
-	if (!info) abs = true;
-
-	if (abs) {
-		// hacky because onclick fucking dies after 404
-		const optVisTitle = document.createElement('a');
-		optVisTitle.innerHTML = "< Back";
-		optVisTitle.href = "/cc3d/sceneloader_nsfw.html";
-		optVis.appendChild(optVisTitle);
-
-		sceneSelectDiv.appendChild(optVis);
-	} else {
-		const optVisTitle = document.createElement('span');
-		optVisTitle.innerHTML = "< Back";
-		optVis.appendChild(optVisTitle);
-		optVis.onclick = reload;
-		sceneSelectDiv.appendChild(optVis);
-	}
-
+	
+	sceneSelectDiv.appendChild(createControlButton('< Back', reloadOrExplode));
+	sceneSelectDiv.appendChild(createControlButton('PS1', showInfo));
+	sceneSelectDiv.appendChild(createControlButton('Normal', showOptions));
+	
 	const sceneControls = document.createElement('div');
 	sceneControls.className = "sceneControls";
-
-	if (info) {
-		sceneSelectDiv.appendChild(presentBackInfo(sid, info));
+	
+	const info = scenes[sid];
+	if (info)
 		if (info.type == "animated" || info.type == "motion")
-			addSceneControls(sceneControls)
-		
-	} else {
-		sceneSelectDiv.innerHTML += `<br>An error, cannot find ${sid}`;
-		if (parseInt(sid) >= 28747249)
-			sceneSelectDiv.innerHTML += "<br>Perhaps wrong post ID?";
-	}
-
+			addSceneControls(sceneControls);
+	
+	sceneSelectDiv.appendChild(sceneControls);
+	
+	sceneSelectDiv.appendChild(presentSceneInfo(sid, info));
 	sceneMenu.appendChild(sceneSelectDiv);
-	sceneMenu.appendChild(sceneControls);
+	
 }
 
 function init() {
@@ -191,8 +206,8 @@ function preparseThis(loadThis) {
 }
 
 function getLoadSceneUI() {
-	var loadThis;
-
+	loadThis = undefined;
+	
 	if (window.location.search) {
 		loadThis = preparseThis(window.location.search.substr(3));
 		presentBack(loadThis)

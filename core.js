@@ -31,13 +31,21 @@ export function setPixelRatio(v) {
 }
 
 export function initialiseDefaultScene(c) {
-	renderer = new THREE.WebGLRenderer({
-		antialias: true
-	});
-	renderer.setPixelRatio(window.devicePixelRatio);
+	const quality = localStorage.getItem('quality') || 'high';
+	
+	let antialias = (quality === 'high');
+	let pixelRatio = (quality === 'low') ? 0.5 : window.devicePixelRatio;
+	
+	renderer = new THREE.WebGLRenderer({ antialias: antialias });
+	renderer.setPixelRatio(pixelRatio);
 	renderer.setSize(window.innerWidth, window.innerHeight);
 	renderer.toneMapping = THREE.LinearToneMapping;
 	renderer.toneMappingExposure = 1;
+	
+	if (quality === 'low') {
+		renderer.shadowMap.enabled = false;
+	}
+	
 	c.appendChild(renderer.domElement);
 }
 
@@ -183,15 +191,55 @@ function animate(now) {
 	render();
 }
 
-export function render() {
-	if (!camera) return
+export function setQuality(quality) {
+	localStorage.setItem('quality', quality);
+	location.reload(); 
+}
 
+function showLowFpsWarning() {
+	const popup = document.createElement('div');
+	popup.style.position = 'absolute';
+	popup.style.top = '10px';
+	popup.style.right = '10px';
+	popup.style.padding = '10px';
+	popup.style.backgroundColor = 'rgba(0,0,0,0.8)';
+	popup.style.color = 'white';
+	popup.style.zIndex = 1000;
+	popup.innerHTML = `
+		Low performance detected.<br/>
+		<a href="#" id="reduceQuality">Click here to lower quality</a>
+	`;
+	document.body.appendChild(popup);
+
+	document.getElementById('reduceQuality').onclick = function(e) {
+		e.preventDefault();
+		setQuality('low')
+	};
+}
+
+let frameTimes = [];
+let lowFpsWarningShown = false;
+
+function render() {
+	if (!camera) return;
+	
 	sceneReady = true;
-	if (!applicationReadyFlag) return
-
+	if (!applicationReadyFlag) return;
+	
 	stats.begin();
-
 	renderer.render(scene, camera);
-
 	stats.end();
+	
+	// Track framerate
+	const now = performance.now();
+	frameTimes.push(now);
+	while (frameTimes.length > 0 && frameTimes[0] < now - 2000) {
+		frameTimes.shift();
+	}
+	
+	const fps = frameTimes.length / 2;
+	if (frameTimes.length > 60 && fps < 20 && !lowFpsWarningShown) {
+		showLowFpsWarning();
+		lowFpsWarningShown = true;
+	}
 }
