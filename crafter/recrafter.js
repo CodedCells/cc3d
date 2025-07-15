@@ -1,4 +1,5 @@
-import * as core from '/cc3d/core.js';
+const modulePath = "/cc3d/core.js?v=" + Math.random();
+const core = await import(modulePath);
 
 var fails = 0;
 
@@ -509,7 +510,7 @@ function drawplayPuase() {
 	
 	ctx.fill();
 	
-	magicStateSet(-4, core.playSpeed > 0);
+	magicStateSet(-4, false);
 	
 	// play/pause
 	drawPolygon([

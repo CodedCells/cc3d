@@ -220,7 +220,7 @@ function showLowFpsWarning() {
 let frameTimes = [];
 let lowFpsWarningShown = false;
 
-function render() {
+export function render() {
 	if (!camera) return;
 	
 	sceneReady = true;
