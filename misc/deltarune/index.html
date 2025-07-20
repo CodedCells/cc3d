@@ -513,7 +513,7 @@ function drawWorld() {
 	
 	ctx.fillStyle = "#121215";
 	ctx.globalCompositeOperation = "lighten";
-	ctx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	ctx.globalCompositeOperation = "source-over";
 }
 
@@ -1024,6 +1024,9 @@ function moveChaser(name, data, delta, canNav) {
 	var me = data;
 	var generatedNav = false;
 	
+	if (me.goals == undefined)
+		me.goals = [];
+	
 	if (keysHeld["KeyH"]) {
 		me.x = Math.floor(objects.player.x);
 		me.y = Math.floor(objects.player.y);
@@ -1040,6 +1043,8 @@ function moveChaser(name, data, delta, canNav) {
 			y: Math.floor(me.y / 8)};
 		
 		var desireOffset = (Math.floor(lastTime/1500-me.node)+Math.floor(me.node*4))%4;
+		if (isNaN(desireOffset)) desireOffset = 0;
+		
 		desireOffset = [
 			[-2, -4],
 			[4, -2],
@@ -1141,6 +1146,9 @@ function moveChasers(delta) {
 	
 	for (var key in objects) {
 		if (!(key.startsWith("chaser")))
+			continue
+		
+		if (objects.player.followers.includes(key))
 			continue
 		
 		var didNav = moveChaser(key, objects[key], delta, canNav);
