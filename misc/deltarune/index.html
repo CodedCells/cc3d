@@ -1,0 +1,1347 @@
+<!--
+Deltarune thingy
+
+Walk over characters to add to party
+Press enter to enter party menu
+-->
+<title>CodedCells Deltarune Thing</title>
+<style>
+body {
+	background: #000000;
+	margin: 0;
+	cursor: none;
+}
+
+#display {
+	width: 100%;
+	height: 100%;
+	
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+}
+
+#controller {
+	width: 420px;
+	cursor: initial;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+
+	position: fixed;
+	opacity: 0.3;
+	bottom: 0;
+	left: 0;
+}
+
+</style>
+
+<body>
+<canvas width="128" height="64" id="controller"></canvas>
+<canvas id="display"></canvas>
+<script>
+let zoom = 1;
+let minZoom = 0.125;
+let maxZoom = 2;
+let lastTouchDistance = null;
+
+function handleWheelZoom(event) {
+    event.preventDefault();
+    const zoomAmount = -event.deltaY * 0.001;
+    zoom = Math.min(maxZoom, Math.max(minZoom, zoom + zoomAmount));
+	resize();
+}
+
+function getTouchDistance(touches) {
+    const dx = touches[0].clientX - touches[1].clientX;
+    const dy = touches[0].clientY - touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+
+function handleTouchStart(event) {
+    if (event.touches.length === 2) {
+        lastTouchDistance = getTouchDistance(event.touches);
+    }
+	resize();
+}
+
+function handleTouchMove(event) {
+    if (event.touches.length === 2) {
+        event.preventDefault();
+        const currentDistance = getTouchDistance(event.touches);
+        if (lastTouchDistance !== null) {
+            const distanceDelta = currentDistance - lastTouchDistance;
+            zoom = Math.min(maxZoom, Math.max(minZoom, zoom + distanceDelta * 0.005));
+        }
+        lastTouchDistance = currentDistance;
+    }
+	resize();
+}
+
+function handleTouchEnd(event) {
+    if (event.touches.length < 2) {
+        lastTouchDistance = null;
+    }
+}
+
+document.addEventListener('wheel', handleWheelZoom, { passive: false });
+document.addEventListener('touchstart', handleTouchStart, { passive: false });
+document.addEventListener('touchmove', handleTouchMove, { passive: false });
+document.addEventListener('touchend', handleTouchEnd);
+
+
+// desired screen boundaries
+const bWidth = 320;//960;
+const bHeight = 240;//540;
+
+// padding size (to bring to correct aspect)
+let pWidth = 0;
+let pHeight = 0;
+
+// scroll offset
+let scrollX;
+let scrollY;
+
+let canPathfind = true;
+
+let menu = false;
+
+let objects = {
+	player: {
+		x: -24, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 16, motion: 0, motionZ: 0,
+		moving: false, flip: false,
+		sprite: 1, state: "stable",
+		drawFunction: drawObjectplayer,
+		bigSprite: "kris_dark",
+		facing: "down",
+		followers: ["npc_susie", "npc_ralsei"]
+	},
+	npc_susie: {
+		x: 0, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 41, speed: 0.15,
+		goals: [], debugcolor: "red",
+		drawFunction: drawObjectBig,
+		bigSprite: "susie_dark",
+		facing: "down"
+	},
+	npc_ralsei: {
+		x: 24, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 47, speed: 0.15,
+		goals: [], debugcolor: "green",
+		drawFunction: drawObjectBig,
+		bigSprite: "ralsei",
+		facing: "down"
+	},
+	npc_noelle: {
+		x: 48, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 73, speed: 0.15,
+		goals: [], debugcolor: "blue",
+		drawFunction: drawObjectBig,
+		bigSprite: "noelle_dark",
+		facing: "down"
+	},
+	npc_lancer: {
+		x: 72, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 45, speed: 0.15,
+		goals: [], debugcolor: "yellow",
+		drawFunction: drawObjectBig,
+		bigSprite: "lancer",
+		facing: "down"
+	},
+	npc_toby: {
+		x: 104, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 45, speed: 0.15,
+		goals: [], debugcolor: "yellow",
+		drawFunction: drawObjectBig,
+		bigSprite: "toby",
+		facing: "down"
+	},
+	npc_toby2: {
+		x: 128, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 45, speed: 0.15,
+		goals: [], debugcolor: "yellow",
+		drawFunction: drawObjectBig,
+		bigSprite: "toby",
+		facing: "left"
+	},
+	npc_carby: {
+		x: 156, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 45, speed: 0.15,
+		goals: [], debugcolor: "yellow",
+		drawFunction: drawObjectBig,
+		bigSprite: "carby",
+		facing: "right"
+	},
+	npc_tasqueman: {
+		x: 192, y: 1100, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: 45, speed: 0.15,
+		goals: [], debugcolor: "yellow",
+		drawFunction: drawObjectBig,
+		bigSprite: "tasque_manager",
+		facing: "down"
+	},
+}
+
+var numChasers = 0;
+var playerNavPos = [objects.player.x, objects.player.y];
+
+let lastTime = 0;
+let lastLastTime = 0;
+
+let border = false;
+let tileSize = 8;
+
+let cursorX = 0;
+let cursorY = 0;
+
+function af(s, v) {
+	return new Array(s).fill(v);
+}
+
+function castleGrid(length, y) {
+	row = new Array(length).fill(11);
+	rowNav = new Array(length).fill(2);
+	
+	ym = y % 32
+	for (var x = 0; x < length; x++) {
+		xm = x % 32;
+		
+		row[x] = ((x*37)*(y*337))%113;
+		if (row[x] > 3)
+			row[x] = 0
+		
+		if (ym < 6 || xm < 6) {
+			
+		}
+		
+		if (row[x] == 255)
+			row[x] = 0;;
+	}
+	level.push(row);
+	levelNav.push(rowNav);
+}
+
+function boardwalk(length, y) {
+	row = new Array(length).fill(11);
+	rowNav = new Array(length).fill(255);
+	
+	ym = y % 32
+	for (var x = 0; x < length; x++) {
+		xm = x % 32;
+		if (y > 141 && y < 150) {// path inner
+			if (y % 2 == 1 && (x+(y%4)) % 4 == 3) row[x] = 5;
+			else row[x] = 4;
+		}
+		else if (y > 137 && y < 154) {
+			row[x] = 2;
+			if ([139, 140, 151, 152].includes(y))
+				row[x] = [2, 8][+(x%2 == y%2 && 13 > x%16 && x%16 > 8)];
+		}
+		else if (y > 131 && y < 160) row[x] = 1;
+		else if (ym < 4 || xm < 4) row[x] = 16 + x%2;// planks
+		else if (x > 224 && y > 192 && y < 224) {// grass
+			row[x] = 1;
+			rowNav[x] = 0;
+		}
+		else if (ym < 6) row[x] = 18 + (ym-4);// struts
+		if (row[x] != 11 && row[x] != 18 && row[x] != 19) rowNav[x] = 0;
+		
+		if (row[x] == 11 && xm == 4) row[x] = 26;
+		else if (row[x] == 11 && xm == 31) row[x] = 27;
+	}
+	level.push(row);
+	levelNav.push(rowNav);
+}
+
+let colliders = [];//6, 7, 11, 14, 15, 18, 19, 20, 21, 22, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39];
+
+var level = [];
+var levelNav = [];
+
+const levelWidth = 256;
+const levelHeight = 256;
+
+const mapCanvas = document.createElement('canvas');
+mapCanvas.width  = levelWidth * tileSize;
+mapCanvas.height = levelHeight * tileSize;
+mapCon = mapCanvas.getContext("2d");
+
+
+function buildLevel() {
+	
+	while (level.length < levelHeight) {
+		castleGrid(levelWidth, level.length);
+	}
+}
+
+buildLevel()
+
+let assetCount = 2;
+let spriteSrc = "data:image/webp;base64,UklGRiIBAABXRUJQVlA4WAoAAAAIAAAAHwAABwAAVlA4TCYAAAAvH8ABAAaDbCM92/ub/QN08zNn/Z+A4fJ+JlAVAASogAAAAAHyIEVYSUbWAAAASUkqAAgAAAAGABIBAwABAAAAAQAAABoBBQABAAAAVgAAABsBBQABAAAAXgAAACgBAwABAAAAAgAAADEBAgAQAAAAZgAAAGmHBAABAAAAdgAAAAAAAADydgEA6AMAAPJ2AQDoAwAAUGFpbnQuTkVUIDUuMS44AAUAAJAHAAQAAAAwMjMwAaADAAEAAAABAAAAAqAEAAEAAAAgAAAAA6AEAAEAAAAIAAAABaAEAAEAAAC4AAAAAAAAAAIAAQACAAQAAABSOTgAAgAHAAQAAAAwMTAwAAAAAA==";
+sprites = new Image();
+sprites.onload = function () {
+	start();
+};
+sprites.src = spriteSrc;
+
+let bigSpriteIndex = {
+	// name, sprite x, sprite, y, sprite width, sprite height, walk frames
+	"toby": [0, 0, 24, 19, 4],
+	"kris_light": [0, 20, 19, 38, 4],
+	"kris_dark": [0, 59, 19, 38, 4],
+	"susie_light": [0, 98, 26, 46, 4],
+	"susie_dark": [0, 145, 26, 46, 4],
+	"ralsei_dark": [0, 192, 23, 44, 4],
+	"ralsei": [0, 237, 23, 41, 4],
+	"noelle_light": [0, 279, 23, 47, 4],
+	"noelle_dark": [0, 327, 23, 47, 4],
+	"lancer": [0, 376, 36, 35, 1],
+	"tasque_manager_noskirt": [0, 412, 46, 72, 4],
+	"tasque_manager": [0, 485, 46, 72, 4],
+	"toriel": [0, 558, 25, 53, 4],
+	"carby": [0, 612, 40, 42, 2]
+};
+
+let bigSpriteSrc = "data:image/webp;base64,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";
+bigSprites = new Image();
+bigSprites.onload = function () {
+	start();
+};
+bigSprites.src = bigSpriteSrc;
+
+window.addEventListener('resize', resize, true);
+
+function inBox(x, y, b) {
+	return (b[0] <= x && x <= b[1] && b[2] <= y && y <= b[3]);
+}
+
+var buttonsOn = true;
+
+function newButts(event) {
+	
+	if (!buttonsOn) return;
+	
+	for (const key of Object.keys(keysHeld)) {
+		keysHeld[key] = false;
+	}
+	
+	if (event == undefined)
+		return;
+	
+	event.preventDefault();
+	
+	controllerBB = controller.getBoundingClientRect();
+	controllerScaleX = controllerBB.width / controller.width;
+	controllerScaleY = controllerBB.height / controller.height;
+
+	if (event.touches === undefined)// mousehack
+		event.touches = [event];
+	
+    for (const touch of event.touches) {
+		cursorX = Math.round((touch.clientX - controllerBB.x) / controllerScaleX);
+		cursorY = Math.round((touch.clientY - controllerBB.y) / controllerScaleY);
+		
+		if (!showController) {
+			state = inBox(cursorX, cursorY, [0, 12, 0, 12])
+			if (state)
+				showController = true;
+			else
+				continue;
+		}
+		
+        for (var key of Object.keys(controllerButtons)) {
+			cdx = controllerButtons[key];
+			cdx = [cdx[0], cdx[0]+cdx[2], cdx[1], cdx[1]+cdx[3]];
+			if (inBox(cursorX, cursorY, cdx)) {
+				if (key.includes("_")) {
+					key = key.split("_")
+					regularInput({code: key[0], fake:true}, true);
+					regularInput({code: key[1], fake:true}, true);
+				}
+				else regularInput({code: key, fake:true}, true);
+			}
+		}
+    }
+}
+
+function getDisplay() {
+	controller = document.getElementById("controller");
+	
+	controller.addEventListener("mousemove", newButts, false);
+	controller.addEventListener("mouseleave", newButts, false);
+	controller.addEventListener("mousedown", newButts, false);
+	
+	controller.addEventListener('touchstart', newButts);
+	controller.addEventListener('touchmove', newButts);
+	controller.addEventListener('touchend', newButts);
+	
+	con = controller.getContext("2d");
+	
+	canvas = document.getElementById("display");
+	ctx = canvas.getContext("2d");
+	
+	// turn off image aliasing
+	ctx.msImageSmoothingEnabled = false;
+	ctx.mozImageSmoothingEnabled = false;
+	ctx.webkitImageSmoothingEnabled = false;
+	ctx.imageSmoothingEnabled = false;
+}
+
+function resize() {
+	getDisplay();
+	
+	var w = window.innerWidth;
+	var h = window.innerHeight;
+
+	aspectf = w/h;
+	if (aspectf >= 1) {// landscape
+		pWidth = Math.round((aspectf * bHeight - bWidth) / 2);
+		pHeight = 0;
+	} else {// portrait
+		pWidth = 0;
+		pHeight = Math.round((h/w * bWidth - bHeight) / 2);
+	}
+
+	// Change here: scale the canvas resolution by zoom
+	canvas.width = (pWidth*2 + bWidth) / zoom;
+	canvas.height = (pHeight*2 + bHeight) / zoom;
+	
+	pWidth = (canvas.width - bWidth) / 2;
+	pHeight = (canvas.height - bHeight) / 2;
+}
+
+function posMod(i, m) {
+	i %= m;
+	if (i < 0) i += m;
+	return i;
+}
+
+
+const animatedTiles = {
+};
+
+function drawTile(x, y, i) {
+	tileX = (i % 16) * 8;
+	tileY = Math.floor(i / 16) * 8;
+	mapCon.drawImage(sprites, tileX, tileY, tileSize, tileSize, x*tileSize, y*tileSize, tileSize, tileSize);
+}
+
+function updateWorld(animateOnly, fx, fy, tx, ty) {
+	
+	if (fx == undefined) {
+		fx = 0;
+		fy = 0;
+		tx = levelWidth;
+		ty = levelHeight
+	}
+	
+	const lastFrame = Math.floor(lastLastTime / 600);
+	const frame = Math.floor(lastTime / 600);
+	
+	var tilesToUpdate = {};
+	
+	let lastTileFrame = 0;
+	let newTileFrame = 0;
+	
+	for (var i of Object.keys(animatedTiles)) {
+		lastTileFrame = lastFrame % animatedTiles[i].length;
+		newTileFrame = frame % animatedTiles[i].length;
+		if (lastTileFrame != newTileFrame)
+			tilesToUpdate[i] = animatedTiles[i][newTileFrame];
+	}
+	
+	for (var y = fy; y < ty; y++) {
+		for (var x = fx; x < tx; x++) {
+			let i = level[y%levelHeight][x%levelWidth];
+			
+			if (tilesToUpdate[i])
+				i = tilesToUpdate[i];
+			
+			else if (animateOnly)
+				continue;
+			
+			//if ((x%2 == y%2) == frame)
+			//	continue;
+			
+			drawTile(x%levelWidth, y%levelHeight, i);
+		}
+	}
+}
+
+
+function drawWorld() {
+    ctx.save();
+    
+    fx = posMod(Math.floor((scrollX - pWidth) / 8 - 8), levelWidth);
+    fy = posMod(Math.floor((scrollY - pHeight) / 8 - 8), levelHeight);
+    tx = Math.ceil((bWidth + pWidth + pWidth) / 8) + fx + 16;
+    ty = Math.ceil((bHeight + pHeight + pHeight) / 8) + fy + 16;
+    //updateWorld(true, fx, fy, tx, ty);
+
+    var offsetX = -posMod(Math.floor(scrollX - pWidth), mapCanvas.width);
+    var offsetY = -posMod(Math.floor(scrollY - pHeight), mapCanvas.height);
+
+    while (offsetX < bWidth + pWidth + pWidth) {
+        while (offsetY < bHeight + pHeight + pHeight) {
+            ctx.drawImage(mapCanvas, offsetX, offsetY, mapCanvas.width, mapCanvas.height);
+            offsetY += mapCanvas.height;
+        }
+        offsetX += mapCanvas.width;
+        offsetY = -posMod(Math.floor(scrollY - pHeight), mapCanvas.height);
+    }
+    ctx.restore();
+	
+	ctx.fillStyle = "#121215";
+	ctx.globalCompositeOperation = "lighten";
+	ctx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
+	ctx.globalCompositeOperation = "source-over";
+}
+
+function drawObjectplayer(name, data, spriteX, spriteY) {
+	return drawObjectBig(name, data, spriteX, spriteY);
+}
+
+function drawObjectBig(name, data, spriteX, spriteY) {
+	//ctx.fillRect(spriteX, spriteY, 2, 2);// debug pos
+	
+	bsData = bigSpriteIndex[data.bigSprite];
+	[graphicX, graphicY, graphicW, graphicH, frames] = bsData;
+	
+	if (data.moving)
+		data.sprite = Math.floor(lastTime / 300) % frames;
+	else
+		data.sprite = 0;
+	
+	graphicOffX = Math.floor(graphicW/2);
+	graphicOffY = Math.floor(graphicH);
+	
+	if (data.facing == "down")
+		null;
+	else if (data.facing == "left")
+		graphicX += (graphicW + 1);
+	else if (data.facing == "right")
+		graphicX += (graphicW + 1) * 2;
+	else if (data.facing == "up")
+		graphicX += (graphicW + 1) * 3;
+	
+	if (data.sprite != 2)
+		if (data.sprite == 1)
+			graphicX += (graphicW + 1) * 4
+		else if (data.sprite == 3)
+			graphicX += (graphicW + 1) * 8
+	
+	ctx.drawImage(bigSprites,
+		graphicX, graphicY,
+		graphicW, graphicH,
+		Math.floor(spriteX-graphicOffX), Math.floor(spriteY-graphicOffY),
+		graphicW, graphicH,
+	);
+}
+
+function drawObject(name, data) {
+	if (data.draw === false) return // skip things we shouldn't draw
+	
+	var spriteX = Math.floor(data.x - (scrollX - pWidth));
+	var spriteY = Math.floor(data.y - (scrollY - pHeight));
+	
+	var spritAlpha = 1;
+	if (data.alpha !== undefined)
+		spritAlpha = data.alpha;
+	
+	if (data.shadow !== false) {
+		var shadowX = spriteX - 8;
+		var shadowY = spriteY - 4;
+		ctx.globalAlpha = Math.max(0, 0.4 - data.z / 100);
+		ctx.drawImage(sprites, 64, 8, 16, 8, shadowX, shadowY, data.size, data.size/2);
+		ctx.globalAlpha = spritAlpha;
+	}
+	if (keysHeld.KeyZ && data.goals && data.goals.length > 0 && data.goals[0].x !== undefined) {
+		ctx.beginPath(); // Start a new path
+		ctx.setLineDash([2, 6]);
+		ctx.moveTo(spriteX+4, spriteY+4);
+		
+		for (var g = 0; g < data.goals.length; g++) {
+			ctx.lineTo(
+				Math.floor((data.goals[g].x * 8) + 4 - (scrollX - pWidth)),
+				Math.floor((data.goals[g].y*8) + 4 - (scrollY - pHeight)));
+		}
+		ctx.strokeStyle = data.debugcolor;
+		ctx.stroke();
+	}
+	
+	spriteY -= data.z;
+	
+	if (data.drawFunction !== undefined) {
+		data.drawFunction(name, data, spriteX, spriteY)
+		return;
+	}
+	
+	// sprites are stored 16 across, each 8x8
+	var graphicX = (data.sprite % 16) * 8;
+	var graphicY = Math.floor(data.sprite / 16) * 8;
+	if (data.flip && name != "player") {// canvases cannot draw flipped images
+		graphicX += 64;
+	}
+	/* // show offscrren guys at edges
+	if (spriteX < 0) spriteX = -2;
+	else if (spriteX > canvas.width) spriteX = canvas.width-6;
+	
+	if (spriteY < 0) spriteY = -2;
+	else if (spriteY > canvas.height) spriteY = canvas.height-6;
+	*/
+	ctx.drawImage(sprites,
+		graphicX, graphicY,
+		data.size, data.size,
+		spriteX, spriteY,
+		data.size, data.size
+	);
+}
+
+function drawObjects() {
+	var keys = Object.keys(objects);
+
+	// Sort keys by Y value (lowest to highest)
+	keys.sort((a, b) => objects[a].y - objects[b].y);
+
+	for (var key of keys) {
+		drawObject(key, objects[key]);
+	}
+}
+
+function drawControllerButton(b, state) {
+	[x, y, w, h] = b;
+	con.fillStyle = "#000";
+	con.fillRect(x, y, w, h);
+	con.fillStyle = "#333";
+	if (state)
+		con.fillStyle = "#fff";
+	con.fillRect(x+1, y+1, w-2, h-2);
+}
+
+var controllerButtons = {
+	"ArrowLeft": [20, 18, 16, 12],
+	"ArrowRight": [52, 18, 16, 12],
+	"ArrowUp": [38, 0, 12, 16],
+	"ArrowDown": [38, 32, 12, 16],
+	
+	"ArrowLeft_ArrowUp": [24, 4, 13, 13],
+	"ArrowRight_ArrowUp": [51, 4, 13, 13],
+	"ArrowLeft_ArrowDown": [24, 31, 13, 13],
+	"ArrowRight_ArrowDown": [51, 31, 13, 13],
+	
+	"Enter": [0, 8, 12, 12],
+	"KeyQ": [0, 24, 12, 12]
+}
+
+function drawController() {
+	con.clearRect(0, 0, controller.width, controller.height);
+	
+	if (!showController) {
+		drawControllerButton([0, 0, 12, 12], false);
+		return
+	}
+	
+	var cb = controllerButtons;
+	noSide = !(keysHeld.ArrowLeft || keysHeld.ArrowRight)
+	noVert = !(keysHeld.ArrowUp || keysHeld.ArrowDown)
+	// cardinal
+	drawControllerButton(cb.ArrowLeft, keysHeld.ArrowLeft && noVert);
+	drawControllerButton(cb.ArrowRight, keysHeld.ArrowRight && noVert);
+	drawControllerButton(cb.ArrowUp, keysHeld.ArrowUp && noSide);
+	drawControllerButton(cb.ArrowDown, keysHeld.ArrowDown && noSide);
+	// diagonal
+	drawControllerButton(cb.ArrowLeft_ArrowUp, keysHeld.ArrowLeft && keysHeld.ArrowUp);
+	drawControllerButton(cb.ArrowRight_ArrowUp, keysHeld.ArrowRight && keysHeld.ArrowUp);
+	drawControllerButton(cb.ArrowLeft_ArrowDown, keysHeld.ArrowLeft && keysHeld.ArrowDown);
+	drawControllerButton(cb.ArrowRight_ArrowDown, keysHeld.ArrowRight && keysHeld.ArrowDown);
+	// jump
+	drawControllerButton(cb.Enter, keysHeld.Enter);
+	drawControllerButton(cb.KeyQ, keysHeld.KeyQ);
+}
+
+function lerp(a, b, alpha) {
+	return a + alpha * (b - a);
+}
+
+let lastX = 0;
+let lastY = 0;
+let lastMove = [0, 0];
+
+function inboundsTile(x, y) {
+	return level[posMod(y, levelHeight)][posMod(x, levelWidth)];
+}
+
+function canMove(srcX, srcY, diffX, diffY) {
+    
+	var canX = true;
+	var canY = true;
+	
+	var hits = []
+    // Check if the target tile is not blocked (i.e., not 255)
+    for (let y = -2; y < 0; y++) {
+        for (let x = -1; x < 1; x++) {
+			hits.push(colliders.includes(inboundsTile(
+					Math.round(srcX+diffX+x),
+					Math.round(srcY+diffY+y)
+					)));
+        }
+    }
+	if (hits.reduce((a, b) => a + b, 0) == 0)
+		return [canX, canY];
+	
+	/*
+	if (hits.slice(0,3).reduce((a, b) => a + b, 0) < 2 && diffY < 0)
+		return [false, canY];
+	else if (hits.slice(6,9).reduce((a, b) => a + b, 0) < 2 && diffY > 0)
+		return [false, canY];
+	if ([hits[0], hits[3], hits[6]].reduce((a, b) => a + b, 0) < 2 && diffX < 0)
+		return [canX, false]
+	if ([hits[2], hits[5], hits[8]].reduce((a, b) => a + b, 0) < 2 && diffX > 0)
+		return [canX, false]
+	*/
+	
+    return [false, false];
+}
+
+function moveFollower(delta, name, index, playerMoving) {
+	if (!(name in objects)) return;
+	
+	const me = objects[name];
+	
+	if (playerMoving) me.moving = true;
+	if (!me.moving) return;
+	
+	const luaIndex = index + 1;
+	
+	let targetX = objects.player.x;
+	let targetY = objects.player.y;
+	
+	switch (objects.player.facing) {
+		case "right": targetX -= 24 * luaIndex; break;
+		case "left": targetX += 24 * luaIndex; break;
+		case "down": targetY -= 24 * luaIndex; break;
+		case "up": targetY += 24 * luaIndex; break;
+	}
+	
+	me.facing = objects.player.facing;
+	
+	// Calculate difference
+	const dx = targetX - me.x;
+	const dy = targetY - me.y;
+	
+	// Compute distance to target
+	const distance = Math.sqrt(dx * dx + dy * dy);
+	
+	// If close enough, snap to target
+	if (distance < (0.5*delta)) {
+		me.x = targetX;
+		me.y = targetY;
+	} else {
+		// Calculate movement step (64 * delta) in direction of target
+		const moveDist = 0.4 * delta;
+		const moveX = (dx / distance) * moveDist;
+		const moveY = (dy / distance) * moveDist;
+
+		// Update position
+		me.x += moveX;
+		me.y += moveY;
+	}
+	
+	if (!playerMoving) me.moving = false;
+}
+
+function getNearbyObjects(objects, threshold = 10) {
+	const nearby = [];
+	const player = objects.player;
+
+	for (let key in objects) {
+		if (key === 'player') continue;
+
+		const obj = objects[key];
+		const dx = Math.abs(obj.x - player.x);
+		const dy = Math.abs(obj.y - player.y);
+
+		if (dx <= threshold && dy <= threshold) {
+			nearby.push(key);
+		}
+	}
+
+	return nearby;
+}
+
+function movePlayer(delta) {
+	var speedMul = objects.player.motion / 256;
+	
+	var move = [0, 0];
+	var wasMoving = objects.player.moving;
+	
+	if (keysHeld.ArrowLeft) {
+		move[0] = -1;
+		objects.player.facing = "left";
+		objects.player.flip = false;
+	}
+	else if (keysHeld.ArrowRight) {
+		move[0] = 1;
+		objects.player.facing = "right";
+		objects.player.flip = true;
+	}
+	if (keysHeld.ArrowUp) {
+		move[1] = -1;
+		objects.player.facing = "up";
+		if (!wasMoving)
+			objects.player.flip = false;
+	}
+	else if (keysHeld.ArrowDown) {
+		move[1] = 1;
+		objects.player.facing = "down";
+		if (!wasMoving)
+			objects.player.flip = true;
+	}
+	objects.player.moving = false;
+	objects.player.moving = move[0] !== 0 || move[1] !== 0;
+	
+	var multiMove = 1;
+	if (move[0] != 0 && move[1] != 0)
+		multiMove = 0.7;
+	if (move[0] != 0 || move[1] != 0)
+		lastMove = move;
+	
+	objects.player.deltaX = lastMove[0] * delta * speedMul * multiMove
+	objects.player.deltaY = lastMove[1] * delta * speedMul * multiMove;
+	
+	playerPosX = (objects.player.x/tileSize);
+	playerPosY = (objects.player.y/tileSize);
+	[canX, canY] = canMove(playerPosX, playerPosY+.25, objects.player.deltaX/tileSize, objects.player.deltaY/tileSize)
+	
+	if (objects.player.z == 0) {
+		if (!canX)
+			objects.player.deltaX = 0;
+		if (!canY)
+			objects.player.deltaY = 0;
+	}
+	
+	objects.player.x += objects.player.deltaX;
+	objects.player.y += objects.player.deltaY;
+	
+	objects.player.followers.forEach((name, index) => {
+		moveFollower(delta, name, index, objects.player.moving);
+	});
+	
+	closeObjects = getNearbyObjects(objects);
+	closeObjects.forEach((name, index) => {
+		console.log(name);
+		if (!objects.player.followers.includes(name)) {
+			objects.player.followers.push(name);
+		}
+	});
+	
+	if (!colliders.includes(inboundsTile(
+		Math.floor(objects.player.x/tileSize),
+		Math.floor(objects.player.y/tileSize))))
+		playerNavPos = [objects.player.x, objects.player.y];
+	
+	if (objects.player.z > 0) {
+		objects.player.z += objects.player.motionZ;
+		objects.player.motionZ -= 0.5;
+		if (objects.player.motionZ < -4)
+			objects.player.motionZ = -2;
+	} else {
+		objects.player.z = 0;
+		objects.player.motionZ = 0;
+	}
+	
+	if (objects.player.moving) {
+		objects.player.motion = 64;
+	} else {
+		objects.player.motion = 0;
+	}
+}
+
+function updateScroll(target) {
+	let followX = Math.floor((bWidth-target.size)/2);
+	let followY;
+	if (target.bigSprite != undefined) {
+		targetHeight = bigSpriteIndex[target.bigSprite][3];
+		followY = Math.floor((bHeight+targetHeight)/2);
+	}
+	else
+		followY = Math.floor((bHeight-target.size)/2);
+	
+	if (keysHeld.KeyC) {
+		return
+	}
+	
+	desiredScrollX = target.x - followX;
+	desiredScrollY = target.y - followY;
+	
+	scrollX = desiredScrollX;
+	scrollY = desiredScrollY;
+}
+
+// chaser logic
+
+class Node {
+    constructor(x, y, g, h, parent = null) {
+        this.x = x;
+        this.y = y;
+        this.g = g; // Cost from start to this node
+        this.h = h; // Heuristic cost from this node to goal
+        this.f = g + h; // Total cost
+        this.parent = parent;
+    }
+}
+
+function aStarPathfinder(grid, start, end, iterationLimit) {
+    const openList = [];
+    const closedList = [];
+    
+    const startNode = new Node(start.x, start.y, 0, heuristic(start, end));
+    openList.push(startNode);
+    
+	let iterations = 0;
+    while (openList.length > 0) {
+	
+		if (iterations >= iterationLimit) {
+            //console.log('Iteration limit reached');
+            return [];
+        }
+
+        // Get the node with the lowest f value
+        openList.sort((a, b) => a.f - b.f);
+        const currentNode = openList.shift();
+        
+        if (currentNode.x === end.x && currentNode.y === end.y) {
+            return constructPath(currentNode);
+        }
+        
+        closedList.push(currentNode);
+        
+        // Get neighbors
+        const neighbors = getNeighbors(currentNode, grid);
+        for (let neighbor of neighbors) {
+            if (closedList.some(node => node.x === neighbor.x && node.y === neighbor.y)) {
+                continue;
+            }
+            
+            const tentativeG = currentNode.g + getCost(grid, currentNode, neighbor);
+            let neighborNode = openList.find(node => node.x === neighbor.x && node.y === neighbor.y);
+            
+            if (!neighborNode) {
+                neighborNode = new Node(neighbor.x, neighbor.y, tentativeG, heuristic(neighbor, end), currentNode);
+                openList.push(neighborNode);
+            } else if (tentativeG < neighborNode.g) {
+                neighborNode.g = tentativeG;
+                neighborNode.f = neighborNode.g + neighborNode.h;
+                neighborNode.parent = currentNode;
+            }
+        }
+		
+		iterations++;
+		
+    }
+    
+    return []; // No path found
+}
+
+function heuristic(pos0, pos1) {
+    // Using Manhattan distance as heuristic
+    return Math.abs(pos0.x - pos1.x) + Math.abs(pos0.y - pos1.y);
+}
+
+function getNeighbors(node, grid) {
+    const neighbors = [];
+    const directions = [
+        {x: 0, y: -1}, {x: 0, y: 1},  // vertical
+        {x: -1, y: 0}, {x: 1, y: 0},  // horizontal
+        {x: -1, y: -1}, {x: 1, y: 1}, // diagonal
+        {x: -1, y: 1}, {x: 1, y: -1}  // diagonal
+    ];
+    
+    for (let dir of directions) {
+        const newX = node.x + dir.x;
+        const newY = node.y + dir.y;
+        
+		const lx = posMod(newX, levelWidth);
+		const ly = posMod(newY, levelHeight);
+		
+		if (grid[ly][lx] !== 255) {
+			neighbors.push({x: newX, y: newY});
+		}
+    }
+    
+    return neighbors;
+}
+
+function getCost(grid, currentNode, neighborNode) {
+    // Increase the cost for diagonal movement
+    const isDiagonal = Math.abs(currentNode.x - neighborNode.x) === 1 && Math.abs(currentNode.y - neighborNode.y) === 1;
+	var baseCost = 1;
+	
+	const lx = posMod(neighborNode.x, levelWidth);
+	const ly = posMod(neighborNode.y, levelHeight);
+	
+	var baseCost = grid[ly][lx] > 1 ? grid[ly][lx] : 1;
+    return baseCost + (isDiagonal ? 1 : 0); // Add extra cost for diagonal movement
+}
+
+function constructPath(node) {
+    const path = [];
+    while (node) {
+        path.push({x: node.x, y: node.y});
+        node = node.parent;
+    }
+    return path.reverse();
+}
+
+function getPointOnCircle(centerX, centerY, radius, angleDegrees) {
+	const angleRadians = angleDegrees * (Math.PI / 180); // Convert degrees to radians
+	const x = centerX + radius * Math.cos(angleRadians);
+	const y = centerY + radius * Math.sin(angleRadians);
+	return [x, y];
+}
+
+function moveChaser(name, data, delta, canNav) {
+	var me = data;
+	var generatedNav = false;
+	
+	if (keysHeld["KeyH"]) {
+		me.x = Math.floor(objects.player.x);
+		me.y = Math.floor(objects.player.y);
+		me.deltaX = 0;
+		me.deltaY = 0;
+		me.goals = [];
+		me.moving = false;
+		return
+	}
+	
+	else if (me.goals.length == 0) {
+		const start = {
+			x: Math.floor(me.x / 8),
+			y: Math.floor(me.y / 8)};
+		
+		var desireOffset = (Math.floor(lastTime/1500-me.node)+Math.floor(me.node*4))%4;
+		desireOffset = [
+			[-2, -4],
+			[4, -2],
+			[2, 4],
+			[-4, 2]][desireOffset];
+		
+		const target = {
+			x: Math.round((playerNavPos[0]) / 8),
+			y: Math.round((playerNavPos[1]) / 8)};
+		
+		if (colliders.includes(inboundsTile(
+			target.x + desireOffset[0],
+			target.y + desireOffset[1]
+			)))
+			desireOffset = [0, 1];
+		if (colliders.includes(inboundsTile(
+			target.x + desireOffset[0],
+			target.y + desireOffset[1]
+			)))
+			desireOffset = [0, 0];
+		
+		target.x += desireOffset[0];
+		target.y += desireOffset[1];
+		
+		if (start.x == target.x && start.y == target.y) {
+			me.moving = false;
+			return false;
+		}
+		
+		if (!canNav) {
+			me.moving = false;
+			return false;
+		}
+		
+		//console.log(name, start, target)
+		
+		me.goals = aStarPathfinder(
+			levelNav,
+			start,
+			target,
+			1000
+			);
+		if (me.goals.length > 20) me.goals.length = 20;
+		generatedNav = true;
+	}
+	if (me.goals.length < 1 || me.goals[0].x === undefined) {
+		me.goals.shift();
+		return generatedNav;
+	}
+	nextX = me.goals[0].x * 8;
+	nextY = me.goals[0].y * 8;
+	
+	var stepX = +me.x;
+	var stepY = +me.y;
+	
+	me.speed = 0.2;
+	
+	if (nextX < me.x) {
+		stepX -= me.speed * delta;
+		me.facing = "left";
+	}
+	else if (nextX > me.x) {
+		stepX += me.speed * delta;
+		me.facing = "right";
+	}
+	if (nextY < me.y) {
+		stepY -= me.speed * delta;
+		me.facing = "up";
+	}
+	else if (nextY > me.y) {
+		stepY += me.speed * delta;
+		me.facing = "down";
+	}
+	
+	if (Math.abs(nextX - me.x) < 1 || Math.abs(stepX - nextX) > Math.abs(me.x - nextX))
+		me.x = nextX;
+	else
+		me.x = stepX;
+	
+	if (Math.abs(nextY - me.y) < 1 || Math.abs(stepY - nextY) > Math.abs(me.y - nextY))
+		me.y = nextY;
+	else
+		me.y = stepY;
+	
+	me.moving = true;
+	if (me.x == nextX && me.y == nextY) {
+		me.goals.shift();
+		me.steps++;
+	}
+	
+	return generatedNav;
+}
+
+function moveChasers(delta) {
+	
+	numChasers = 0;
+	
+	var canNav = canPathfind * Math.max(3, Math.floor(Math.max(1,numChasers)/300));
+	
+	for (var key in objects) {
+		if (!(key.startsWith("chaser")))
+			continue
+		
+		var didNav = moveChaser(key, objects[key], delta, canNav);
+		if (didNav)
+			canNav -= 1;
+		numChasers++;
+	}
+}
+
+function spawnChaserAt(x, y, sprite, debugName, canMutate) {
+	if (sprite === undefined || (canMutate && Math.random() < 0.2)) {
+		var sprite = (Math.floor(Math.random() * 9));
+		var debugName = ["red", "orange", "yellow", "green", "lightblue", "blue", "purple", "pink", "white"][sprite];
+		
+		sprite = (sprite * 4) + 41;
+		
+		if (sprite >= 83) {
+			if (Math.random() < 0.5)
+				sprite += 22;
+			else {
+				sprite += 24;
+				debugName = "black";
+			}
+		}
+	}
+	
+	objects["chaser"+Math.floor(lastTime)] =  {
+		x: x * tileSize, y: y * tileSize, z: 0,
+		deltaX: 0, deltaY: 0,
+		size: 8, motion: 0, motionZ: 0,
+		flip: false, sprite: sprite, speed: Math.max(0.015, Math.random()*.03) * 8,
+		goals: [], debugcolor: debugName, node: Math.random() * 4,
+		age: 0, fed: 0, steps: 0,
+		drawFunction: drawObjectBig,
+		bigSprite: "carby",
+		facing: "down"
+	}
+}
+
+let selectedFollower = 0;
+let moveCooldown = 0;
+function drawMenu(delta) {
+	let followers = objects.player.followers;
+	
+	if (followers.length == 0) {
+		menu = false;
+		return;
+	}
+	
+	if (moveCooldown > 0) {
+		moveCooldown -= delta;
+	}
+	else {
+		if (keysHeld.ArrowLeft) {
+			selectedFollower -= 1;
+			moveCooldown = 200;
+			if (selectedFollower < 0) {
+				selectedFollower = followers.length - 1;
+			}
+		}
+		else if (keysHeld.ArrowRight) {
+			selectedFollower += 1;
+			moveCooldown = 200;
+			if (selectedFollower >= followers.length) {
+				selectedFollower = 0;
+			}
+		}
+		else if (keysHeld.ArrowUp) {
+			followers.splice(selectedFollower, 1);
+			moveCooldown = 200;
+		}
+	}
+	
+	if (selectedFollower > followers.length)
+		selectedFollower = followers.length - 1;
+	
+	followername = followers[selectedFollower];
+	if (!(followername in objects)) return;
+	
+	const me = objects[followername];
+	ctx.globalAlpha = 1;
+	ctx.strokeStyle = "#c33";
+    ctx.lineWidth = 4;
+	
+	posX = Math.floor(me.x - (scrollX - pWidth));
+	posY = Math.floor(me.y - (scrollY - pHeight))
+	
+	ctx.beginPath();
+    ctx.moveTo(posX - 5, posY - 5);
+    ctx.lineTo(posX + 5, posY + 5);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(posX + 5, posY - 5);
+    ctx.lineTo(posX - 5, posY + 5);
+    ctx.stroke();
+}
+
+function draw(now) {
+	if (lastTime == 0) lastTime = now;
+    var delta = now - lastTime;
+
+	lastLastTime = lastTime;
+	lastTime = now;
+	
+	updateScroll(objects.player)
+	
+	movePlayer(delta);
+	
+	moveChasers(delta);
+	
+	ctx.globalAlpha = 1;
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	
+	drawWorld();
+	
+	drawObjects();
+	
+	//if (menu)
+	//	drawMenu(delta);
+	
+	drawController();
+	
+	if (keysHeld["KeyG"])
+		if (keysHeld["ShiftLeft"])
+			ctx.drawImage(bigSprites, -Math.floor(scrollX%bigSprites.width), -Math.floor(scrollY%bigSprites.height));
+		else
+			ctx.drawImage(sprites, -Math.floor(scrollX%sprites.width), 64-Math.floor(scrollY%sprites.height));
+	
+	if (border || keysHeld["KeyB"]) {
+		ctx.globalAlpha = 0.25;
+		ctx.fillStyle = "#000";
+		ctx.fillRect(0, 0, pWidth, bHeight);
+		ctx.fillRect(bWidth+pWidth, 0, pWidth, bHeight);
+		ctx.fillRect(0, 0, bWidth, pHeight);
+		ctx.fillRect(0, bHeight+pHeight, bWidth, pHeight);
+	}
+	
+	requestAnimationFrame(draw);
+}
+
+let startCount = 0;
+function start() {
+	if (++startCount < assetCount)
+		return;
+	
+	resize();
+	play();
+}
+
+function play() {
+	console.log("would play");
+	
+	updateWorld(false);
+	requestAnimationFrame(draw);
+}
+
+var showController = true;
+
+var keysHeld = {
+	"ArrowLeft": false,
+	"ArrowRight": false,
+	"ArrowUp": false,
+	"ArrowDown": false,
+	"KeyC": false,
+	"KeyQ": false
+}
+
+var alts = {
+	"KeyA":"ArrowLeft",
+	"KeyD": "ArrowRight",
+	"KeyW": "ArrowUp",
+	"KeyS": "ArrowDown"
+}
+
+function regularInput(e, s) {
+	if (e.fake !== true && showController) {
+		showController = false;
+		newButts();
+	}
+	
+	code = e.code;
+	if (code in alts) code = alts[code];
+	
+	keysHeld[code] = s;
+	if (code == "KeyP" && s) canPathfind = !canPathfind;
+	if (code == "Enter" && s) {
+		//menu = !menu;
+		objects.player.followers = [];
+	}
+	if (code == "KeyQ" && s) {
+		spawnChaserAt(Math.floor(scrollX/tileSize), Math.floor(scrollY/tileSize));
+	}
+}
+
+document.onkeydown = function (e) {
+    e = e || window.event;
+	regularInput(e, true);
+};
+document.onkeyup = function (e) {
+    e = e || window.event;
+	regularInput(e, false);
+};
+</script>
+</body>
