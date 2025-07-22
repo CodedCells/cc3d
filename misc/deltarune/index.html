@@ -1253,9 +1253,8 @@ function draw(now) {
 	lastLastTime = lastTime;
 	lastTime = now;
 	
-	updateScroll(objects.player)
-	
 	movePlayer(delta);
+	updateScroll(objects.player)
 	
 	moveChasers(delta);
 	
