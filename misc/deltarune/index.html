@@ -1042,32 +1042,9 @@ function moveChaser(name, data, delta, canNav) {
 			x: Math.floor(me.x / 8),
 			y: Math.floor(me.y / 8)};
 		
-		var desireOffset = (Math.floor(lastTime/1500-me.node)+Math.floor(me.node*4))%4;
-		if (isNaN(desireOffset)) desireOffset = 0;
-		
-		desireOffset = [
-			[-2, -4],
-			[4, -2],
-			[2, 4],
-			[-4, 2]][desireOffset];
-		
 		const target = {
 			x: Math.round((playerNavPos[0]) / 8),
 			y: Math.round((playerNavPos[1]) / 8)};
-		
-		if (colliders.includes(inboundsTile(
-			target.x + desireOffset[0],
-			target.y + desireOffset[1]
-			)))
-			desireOffset = [0, 1];
-		if (colliders.includes(inboundsTile(
-			target.x + desireOffset[0],
-			target.y + desireOffset[1]
-			)))
-			desireOffset = [0, 0];
-		
-		target.x += desireOffset[0];
-		target.y += desireOffset[1];
 		
 		if (start.x == target.x && start.y == target.y) {
 			me.moving = false;
