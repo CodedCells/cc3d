@@ -840,6 +840,10 @@ function movePlayer(delta) {
 			objects.player.deltaY = 0;
 	}
 	
+	if (keysHeld["ShiftLeft"])
+		objects.player.deltaX *= 1.5;
+		objects.player.deltaY *= 1.5;
+	
 	objects.player.x += objects.player.deltaX;
 	objects.player.y += objects.player.deltaY;
 	
