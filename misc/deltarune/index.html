@@ -852,6 +852,7 @@ function movePlayer(delta) {
 		console.log(name);
 		if (!objects.player.followers.includes(name)) {
 			objects.player.followers.push(name);
+			if (objects[name].goals) objects[name].goals = [];
 		}
 	});
 	
