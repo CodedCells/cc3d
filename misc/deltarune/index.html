@@ -723,24 +723,29 @@ function canMove(srcX, srcY, diffX, diffY) {
     return [false, false];
 }
 
-function moveFollower(delta, name, index, playerMoving) {
-	if (!(name in objects)) return;
+function moveFollower(delta, name, index, space, playerMoving) {
+	if (!(name in objects)) return space;
 	
 	const me = objects[name];
 	
-	if (playerMoving) me.moving = true;
-	if (!me.moving) return;
+	let personal_space = 24;
+	if (me.bigSprite != undefined)
+		if (bigSpriteIndex[me.bigSprite][2] > 32);
+			 personal_space = bigSpriteIndex[me.bigSprite][2];
 	
-	const luaIndex = index + 1;
+	space += Math.floor(personal_space / 2);
+	
+	if (playerMoving) me.moving = true;
+	if (!me.moving) return space + Math.floor(personal_space / 2);
 	
 	let targetX = objects.player.x;
 	let targetY = objects.player.y;
 	
 	switch (objects.player.facing) {
-		case "right": targetX -= 24 * luaIndex; break;
-		case "left": targetX += 24 * luaIndex; break;
-		case "down": targetY -= 24 * luaIndex; break;
-		case "up": targetY += 24 * luaIndex; break;
+		case "right": targetX -= space; break;
+		case "left": targetX += space; break;
+		case "down": targetY -= space; break;
+		case "up": targetY += space; break;
 	}
 	
 	me.facing = objects.player.facing;
@@ -768,6 +773,8 @@ function moveFollower(delta, name, index, playerMoving) {
 	}
 	
 	if (!playerMoving) me.moving = false;
+	
+	return space + Math.floor(personal_space / 2);
 }
 
 function getNearbyObjects(objects, threshold = 10) {
@@ -847,8 +854,9 @@ function movePlayer(delta) {
 	objects.player.x += objects.player.deltaX;
 	objects.player.y += objects.player.deltaY;
 	
+	let distance = 12;
 	objects.player.followers.forEach((name, index) => {
-		moveFollower(delta, name, index, objects.player.moving);
+		distance = moveFollower(delta, name, index, distance, objects.player.moving);
 	});
 	
 	closeObjects = getNearbyObjects(objects);
