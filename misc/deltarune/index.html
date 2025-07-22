@@ -757,11 +757,14 @@ function moveFollower(delta, name, index, space, playerMoving) {
 		case "up": targetY += space; break;
 	}
 	
-	me.facing = objects.player.facing;
-	
 	// Calculate difference
 	const dx = targetX - me.x;
 	const dy = targetY - me.y;
+	
+	if (dx > 0)			me.facing = "right";
+	else if (dx < 0)	me.facing = "left";
+	if (dy > 1)			me.facing = "down";
+	else if (dy < -1)	me.facing = "up";
 	
 	// Compute distance to target
 	const distance = Math.sqrt(dx * dx + dy * dy);
