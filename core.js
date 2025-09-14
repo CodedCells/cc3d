@@ -5,13 +5,15 @@ import {GLTFLoader} from './rip/GLTFLoader.js';
 import {RGBELoader} from './rip/RGBELoader.js';
 import Stats from './rip/stats.module.js';
 
-export let sceneReady, camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
+export let camera, controls, scene, renderer, model, animations, mixer, orbitObject, stats;
 var lastTime;
 export let sceneFile;
 export let playSpeed = 1;
 export let playPaused = false;
-sceneReady = false;
-var applicationReadyFlag = true;
+export let skinTexture;
+
+export let sceneReady = false;
+let applicationReadyFlag = true;
 
 export function setPlaySpeed(value) {
 	playSpeed = value;
@@ -28,6 +30,155 @@ export function applicationReady(value) {
 
 export function setPixelRatio(v) {
 	renderer.setPixelRatio(v);
+}
+
+const canvasPreview = document.createElement('canvas');
+canvasPreview.width = 64;
+canvasPreview.height = 64;
+canvasPreview.style.display = 'none';
+
+const previewCtx = canvasPreview.getContext('2d');
+
+function isRegionAllBlack(ctx, x, y, width, height) {
+	const data = ctx.getImageData(x, y, width, height).data;
+	for (let i = 0; i < data.length; i += 4) {
+		if (data[i] !== 0 || data[i + 1] !== 0 || data[i + 2] !== 0 || data[i + 3] !== 255) {
+			return false;
+		}
+	}
+	return true;
+}
+
+function copyMirroredRegion(sx, sy, dx, dy, sw, sh) {
+	previewCtx.save()
+	previewCtx.translate(dx + sw, dy);
+	
+	// Flip horizontally
+	previewCtx.scale(-1, 1);
+	
+	// Draw the copied section of the image
+	previewCtx.drawImage(canvasPreview, sx, sy, sw, sh, 0, 0, sw, sh);
+	
+	// Restore to normal drawing
+	previewCtx.restore();;
+}
+
+function normalizeSkinImage(image, callback) {
+	const isOldFormat = image.height === 32 && image.width === 64;
+
+	previewCtx.clearRect(0, 0, 64, 64);
+	previewCtx.drawImage(image, 0, 0);
+
+	if (isRegionAllBlack(previewCtx, 32, 0, 32, 16)) {
+		previewCtx.clearRect(32, 0, 32, 16);
+	}
+	
+	if (isOldFormat) {
+		// convert old format
+		
+		// legs
+		copyMirroredRegion(0, 16, 16, 48, 12, 16);
+		previewCtx.clearRect(16, 48, 4, 4);
+		copyMirroredRegion(8, 16, 24, 48, 4, 4);
+		copyMirroredRegion(12, 20, 28, 52, 4, 12);
+
+		// arms
+		copyMirroredRegion(40, 16, 32, 48, 12, 16);
+		previewCtx.clearRect(32, 48, 4, 4);
+		copyMirroredRegion(48, 16, 40, 48, 4, 4);
+		copyMirroredRegion(52, 20, 44, 52, 4, 12);
+	}
+	
+	const newImage = new Image();
+	newImage.onload = () => callback(newImage);
+	newImage.src = canvasPreview.toDataURL();
+}
+
+export function toggleModel(modelType) {
+	if (!model) return;
+
+	model.traverse((child) => {
+		if (child.name === "body_slim") {
+			child.visible = modelType === "Slim";
+		} else if (child.name === "body_wide") {
+			child.visible = modelType === "Wide";
+		}
+	});
+}
+
+export async function loadUsernameSkin(username, manualSelect="auto") {
+	if (!username) return;
+
+	try {
+		// Step 1: Get UUID
+		const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+		if (!profileRes.ok) throw new Error("Invalid username");
+		const profile = await profileRes.json();
+
+		// Step 2: Get session profile and skin URL
+		const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${profile.id}`);
+		const sessionData = await sessionRes.json();
+		const textureProp = sessionData.properties.find(p => p.name === "textures");
+		const decoded = JSON.parse(atob(textureProp.value));
+		const skinUrl = decoded.textures.SKIN.url.replace('http:', 'https:');
+
+		// Step 3: Determine model type
+		let modelType = "Wide"; // default
+		if (manualSelect === "auto") {
+			modelType = decoded.textures.SKIN.metadata?.model === "slim" ? "Slim" : "Wide";
+		} else {
+			modelType = manualSelect === "slim" ? "Slim" : "Wide";
+		}
+
+		// Step 4: Load and normalize skin image
+		const skinRes = await fetch(skinUrl);
+		const blob = await skinRes.blob();
+		const url = URL.createObjectURL(blob);
+
+		const img = new Image();
+		img.onload = () => {
+			normalizeSkinImage(img, (normalized) => {
+				applyTextureFromImage(normalized);
+				toggleModel(modelType);
+			});
+		};
+		img.src = url;
+	} catch (err) {
+		alert("Failed to load skin: " + err.message);
+	}
+}
+
+function applyTextureFromImage(image) {
+	const tex = new THREE.Texture(image);
+	tex.magFilter = THREE.NearestFilter;
+	tex.minFilter = THREE.LinearFilter;
+	tex.generateMipmaps = false;
+	tex.flipY = false;
+	tex.colorSpace = THREE.SRGBColorSpace;
+	tex.needsUpdate = true;
+	skinTexture = tex;
+	applySkinTexture();
+}
+
+function applySkinTexture() {
+	if (!model || !skinTexture) return;
+
+	model.traverse((child) => {
+		if (child.isMesh && child.material) {
+			const materials = Array.isArray(child.material) ? child.material : [child.material];
+			materials.forEach((mat) => {
+				if (mat.name.endsWith("_skin")) {
+					mat.map = skinTexture;
+					mat.transparent = true;
+					mat.alphaTest = 0.5;
+					mat.needsUpdate = true;
+				} else {
+					mat.color = new THREE.Color(1, 0.5, 0.5)
+					mat.needsUpdate = true;
+				}
+			});
+		}
+	});
 }
 
 export function initialiseDefaultScene(c) {
@@ -68,7 +219,10 @@ function loaderReady(gltf) {
 				obj.material.map.minFilter = THREE.LinearFilter;
 		}
 	});
-
+	
+	//loadUsernameSkin("codedcells");
+	//if (skinTexture) applySkinTexture();
+	
 	var orbitObject = model.getObjectByName("@orbit");
 	if (orbitObject) {
 
