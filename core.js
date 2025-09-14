@@ -220,8 +220,10 @@ function loaderReady(gltf) {
 		}
 	});
 	
-	//loadUsernameSkin("codedcells");
-	//if (skinTexture) applySkinTexture();
+	if (sceneFile.startsWith("plyaer"))
+		loadUsernameSkin("codedcells");
+	
+	if (skinTexture) applySkinTexture();
 	
 	var orbitObject = model.getObjectByName("@orbit");
 	if (orbitObject) {
