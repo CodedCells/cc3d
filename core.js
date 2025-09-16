@@ -111,12 +111,12 @@ export async function loadUsernameSkin(username, manualSelect="auto") {
 
 	try {
 		// Step 1: Get UUID
-		const profileRes = await fetch(`https://api.mojang.com/users/profiles/minecraft/${username}`);
+		const profileRes = await fetch(`https://corsproxy.io/?https://api.mojang.com/users/profiles/minecraft/${username}`);
 		if (!profileRes.ok) throw new Error("Invalid username");
 		const profile = await profileRes.json();
 
 		// Step 2: Get session profile and skin URL
-		const sessionRes = await fetch(`https://sessionserver.mojang.com/session/minecraft/profile/${profile.id}`);
+		const sessionRes = await fetch(`https://corsproxy.io/?https://sessionserver.mojang.com/session/minecraft/profile/${profile.id}`);
 		const sessionData = await sessionRes.json();
 		const textureProp = sessionData.properties.find(p => p.name === "textures");
 		const decoded = JSON.parse(atob(textureProp.value));
