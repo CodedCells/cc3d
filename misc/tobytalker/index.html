@@ -22,8 +22,6 @@ body {
 }
 
 #controller {
-	display:none;
-	width: 420px;
 	cursor: initial;
 	image-rendering: -moz-crisp-edges;
 	image-rendering: -webkit-crisp-edges;
@@ -358,6 +356,7 @@ let bigSpriteIndex = {
 };
 
 window.addEventListener('resize', resize, true);
+window.addEventListener('orientationchange', resize);
 
 function inBox(x, y, b) {
 	return (b[0] <= x && x <= b[1] && b[2] <= y && y <= b[3]);
@@ -368,10 +367,6 @@ var buttonsOn = true;
 function newButts(event) {
 	
 	if (!buttonsOn) return;
-	
-	for (const key of Object.keys(keysHeld)) {
-		keysHeld[key] = false;
-	}
 	
 	if (event == undefined)
 		return;
@@ -385,12 +380,13 @@ function newButts(event) {
 	if (event.touches === undefined)// mousehack
 		event.touches = [event];
 	
+	hitKeys = [];
 	for (const touch of event.touches) {
 		cursorX = Math.round((touch.clientX - controllerBB.x) / controllerScaleX);
 		cursorY = Math.round((touch.clientY - controllerBB.y) / controllerScaleY);
 		
 		if (!showController) {
-			state = inBox(cursorX, cursorY, [0, 12, 0, 12])
+			state = inBox(cursorX, cursorY, [0, 12, 64-12, 64])
 			if (state)
 				showController = true;
 			else
@@ -398,17 +394,29 @@ function newButts(event) {
 		}
 		
 		for (var key of Object.keys(controllerButtons)) {
-			cdx = controllerButtons[key];
+			cdx = controllerButtons[key].slice(); // copy, so we don't mutate the shared array
+			// I chased that bug so far man
+			if (cdx[0] < 0)
+				cdx[0] += controller.width;
 			cdx = [cdx[0], cdx[0]+cdx[2], cdx[1], cdx[1]+cdx[3]];
 			if (inBox(cursorX, cursorY, cdx)) {
 				if (key.includes("_")) {
 					key = key.split("_")
 					regularInput({code: key[0], fake:true}, true);
 					regularInput({code: key[1], fake:true}, true);
+					hitKeys += key;
 				}
-				else regularInput({code: key, fake:true}, true);
+				else {
+					regularInput({code: key, fake:true}, true);
+					hitKeys.push(key);
+				}
 			}
 		}
+	}
+	
+	for (const key of Object.keys(keysHeld)) {
+		if (!hitKeys.includes(key))
+			keysHeld[key] = false;
 	}
 }
 
@@ -445,9 +453,12 @@ function resize() {
 	if (aspectf >= 1) {// landscape
 		pWidth = Math.round((aspectf * bHeight - bWidth) / 2);
 		pHeight = 0;
+		controller.width = 256;;
+		
 	} else {// portrait
 		pWidth = 0;
 		pHeight = Math.round((h/w * bWidth - bHeight) / 2);
+		controller.width = 128;
 	}
 
 	// Change here: scale the canvas resolution by zoom
@@ -713,36 +724,50 @@ function drawObjects() {
 	}
 }
 
-function drawControllerButton(b, state) {
+function drawControllerButton(name, state) {
+	b = controllerButtons[name];
+	
 	[x, y, w, h] = b;
+	if (x < 0) {
+		x += controller.width;
+	}
 	con.fillStyle = "#000";
 	con.fillRect(x, y, w, h);
 	con.fillStyle = "#333";
 	if (state)
 		con.fillStyle = "#fff";
+	
 	con.fillRect(x+1, y+1, w-2, h-2);
+	if (name.startsWith("Key"))
+		drawText(name.slice(3).toLowerCase(), x+3, y+1, 1, null, con);
 }
 
+var cbdX = 4;
+var cbdY = 12;
+
 var controllerButtons = {
-	"ArrowLeft": [20, 18, 16, 12],
-	"ArrowRight": [52, 18, 16, 12],
-	"ArrowUp": [38, 0, 12, 16],
-	"ArrowDown": [38, 32, 12, 16],
+	"activator": [0, 64-12, 12, 12],
 	
-	"ArrowLeft_ArrowUp": [24, 4, 13, 13],
-	"ArrowRight_ArrowUp": [51, 4, 13, 13],
-	"ArrowLeft_ArrowDown": [24, 31, 13, 13],
-	"ArrowRight_ArrowDown": [51, 31, 13, 13],
+	"ArrowLeft": [cbdX, cbdY+18, 16, 12],
+	"ArrowRight": [cbdX+32, cbdY+18, 16, 12],
+	"ArrowUp": [cbdX+18, cbdY, 12, 16],
+	"ArrowDown": [cbdX+18, cbdY+32, 12, 16],
 	
-	"Enter": [0, 8, 12, 12],
-	"KeyQ": [0, 24, 12, 12]
+	"ArrowLeft_ArrowUp": [cbdX+4, cbdY+4, 13, 13],
+	"ArrowRight_ArrowUp": [cbdX+31, cbdY+4, 13, 13],
+	"ArrowLeft_ArrowDown": [cbdX+4, cbdY+31, 13, 13],
+	"ArrowRight_ArrowDown": [cbdX+31, cbdY+31, 13, 13],
+	
+	"KeyZ": [-47, 64-20, 12, 16],
+	"KeyX": [-32, 64-20, 12, 16],
+	"KeyC": [-17, 64-20, 12, 16]
 }
 
 function drawController() {
 	con.clearRect(0, 0, controller.width, controller.height);
 	
 	if (!showController) {
-		drawControllerButton([0, 0, 12, 12], false);
+		drawControllerButton("activator", false);
 		return
 	}
 	
@@ -750,18 +775,19 @@ function drawController() {
 	noSide = !(keysHeld.ArrowLeft || keysHeld.ArrowRight)
 	noVert = !(keysHeld.ArrowUp || keysHeld.ArrowDown)
 	// cardinal
-	drawControllerButton(cb.ArrowLeft, keysHeld.ArrowLeft && noVert);
-	drawControllerButton(cb.ArrowRight, keysHeld.ArrowRight && noVert);
-	drawControllerButton(cb.ArrowUp, keysHeld.ArrowUp && noSide);
-	drawControllerButton(cb.ArrowDown, keysHeld.ArrowDown && noSide);
+	drawControllerButton("ArrowLeft", keysHeld.ArrowLeft && noVert);
+	drawControllerButton("ArrowRight", keysHeld.ArrowRight && noVert);
+	drawControllerButton("ArrowUp", keysHeld.ArrowUp && noSide);
+	drawControllerButton("ArrowDown", keysHeld.ArrowDown && noSide);
 	// diagonal
-	drawControllerButton(cb.ArrowLeft_ArrowUp, keysHeld.ArrowLeft && keysHeld.ArrowUp);
-	drawControllerButton(cb.ArrowRight_ArrowUp, keysHeld.ArrowRight && keysHeld.ArrowUp);
-	drawControllerButton(cb.ArrowLeft_ArrowDown, keysHeld.ArrowLeft && keysHeld.ArrowDown);
-	drawControllerButton(cb.ArrowRight_ArrowDown, keysHeld.ArrowRight && keysHeld.ArrowDown);
-	// jump
-	drawControllerButton(cb.Enter, keysHeld.Enter);
-	drawControllerButton(cb.KeyQ, keysHeld.KeyQ);
+	drawControllerButton("ArrowLeft_ArrowUp", keysHeld.ArrowLeft && keysHeld.ArrowUp);
+	drawControllerButton("ArrowRight_ArrowUp", keysHeld.ArrowRight && keysHeld.ArrowUp);
+	drawControllerButton("ArrowLeft_ArrowDown", keysHeld.ArrowLeft && keysHeld.ArrowDown);
+	drawControllerButton("ArrowRight_ArrowDown", keysHeld.ArrowRight && keysHeld.ArrowDown);
+	// controls
+	drawControllerButton("KeyZ", keysHeld.KeyZ);
+	drawControllerButton("KeyX", keysHeld.KeyX);
+	drawControllerButton("KeyC", keysHeld.KeyC);
 }
 
 function lerp(a, b, alpha) {
@@ -1520,8 +1546,9 @@ var keysHeld = {
 	"ArrowRight": false,
 	"ArrowUp": false,
 	"ArrowDown": false,
+	"KeyZ": false,
+	"KeyX": false,
 	"KeyC": false,
-	"KeyQ": false
 }
 
 var alts = {
@@ -1539,7 +1566,7 @@ function removePartyMember(slot) {
 function regularInput(e, s) {
 	if (e.fake !== true && showController) {
 		showController = false;
-		newButts();
+		//newButts();
 	}
 	
 	code = e.code;
@@ -1688,7 +1715,10 @@ function drawTextBox(x, y, w, h) {
 	}
 }
 
-function drawText(text, x, y, s, align) {
+function drawText(text, x, y, s, align, target_ctx) {
+	if (target_ctx == undefined)
+		target_ctx = ctx;
+	
 	dt = [];
 	floatingx = 0;
 	
@@ -1706,7 +1736,7 @@ function drawText(text, x, y, s, align) {
 	floatingx = 0;
 	for (var i = 0; i < dt.length; i++) {
 		[c, cx, cy] = dt[i];
-		ctx.drawImage(
+		target_ctx.drawImage(
 			font_eng,
 			cx * 8, cy * 14,
 			8, 14,
