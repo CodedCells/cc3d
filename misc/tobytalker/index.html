@@ -1611,7 +1611,7 @@ function doKeyZ() {
 		} else if (flags.ateMoss > 1) {
 			dialogueQueue.push("* (The dog can't take\n  a note yet.)");
 			dialogueQueue.push("* (But he can take the moss.)\n* (You are no longer [Moss Bonster].)");
-			flags.ateMoss--;
+			flags.ateMoss = 1;
 		} else {
 			dialogueQueue.push("* (The dog is here.)");
 		}
