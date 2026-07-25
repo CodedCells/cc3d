@@ -1044,7 +1044,7 @@ function updateScroll(target) {
 	else
 		followY = Math.floor((bHeight-target.size)/2);
 	
-	if (!keysHeld.KeyC) {
+	if (!keysHeld.KeyM) {
 		return
 	}
 	
@@ -1554,8 +1554,14 @@ function regularInput(e, s) {
 	
 	keysHeld[code] = s;
 	
-	if (code == "KeyX" && s) {
+	if (["KeyZ", "Enter", "NumpadEnter"].includes(code) && s) {
+		doKeyZ();
+	}
+	if (["KeyX", "ShiftLeft", "ShiftRight"].includes(code) && s) {
 		doKeyX();
+	}
+	if (["KeyC", "ControlLeft", "ControlRight", "AltRight", ].includes(code) && s) {
+		//doKeyC();
 	}
 	
 	if (code == "KeyQ" && s) {
@@ -1595,14 +1601,11 @@ function amIFacing(thing) {
 		return thingObj.x >= player.x - 1 && (player.y - 15 < thingObj.y && player.y > thingObj.y);
 }
 
-function doKeyX() {
+function doKeyZ() {
 	if (dialogueQueue.length) {
 		if (dialogueQueue[0].length == 0) { // logic to continue to next dialgoue / dismiss
             dialogueQueue.shift();
 			currentDialogue = "";
-        } else { // logic to skip current text crawl
-            currentDialogue += dialogueQueue[0];
-			dialogueQueue[0] = "";
         }
 		return;
 	}
@@ -1665,6 +1668,16 @@ function doKeyX() {
 		dialogueQueue.push("* (It's a book containing secrets\n   about upcoming chapters.)");
 		dialogueQueue.push("* (The information seemes very,\n   very, intresting.)");
 		flags.inspectedSpoilers++;
+		return;
+	}
+}
+
+function doKeyX() {
+	if (dialogueQueue.length) {
+		if (dialogueQueue[0].length > 0) { // logic to skip current text crawl
+            currentDialogue += dialogueQueue[0];
+			dialogueQueue[0] = "";
+        }
 		return;
 	}
 }
