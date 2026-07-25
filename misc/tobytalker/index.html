@@ -1439,6 +1439,9 @@ function draw(now) {
 	
 	boxX = 16 + pWidth;
 	boxY = 160 + pHeight;
+	if (objects.player.y > 170) // will probably have to adjust with moving camera
+		boxY = pHeight + 4; // box go up if player on screen low
+	
 	if (currentDialogue.length || dialogueQueue.length) {
 		drawTextBox(boxX, boxY, 289, 76);
 		currentDialogue.split(/\r?\n/).forEach((line, index) => {
