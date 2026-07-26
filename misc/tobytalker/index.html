@@ -1586,11 +1586,81 @@ function removePartyMember(slot) {
 	menu = false;
 }
 
-function regularInput(e, s) {
-	if (e.fake !== true && showController) {
-		showController = false;
-		//newButts();
+// gamepad shizzle, let the console peasents feast
+let gamepadIndex = null;
+
+window.addEventListener("gamepadconnected", (e) => {
+	console.log(`Gamepad connected at index ${e.gamepad.index}: ${e.gamepad.id}`);
+	gamepadIndex = e.gamepad.index;
+	// Start polling when a gamepad connects
+	requestAnimationFrame(updateGamepad);
+});
+
+window.addEventListener("gamepaddisconnected", (e) => {
+	console.log(`Gamepad disconnected from index ${e.gamepad.index}`);
+	if (gamepadIndex === e.gamepad.index) {
+		gamepadIndex = null;
 	}
+});
+
+function registerGamepadInput(btn, state) {
+	if (keysHeld[btn] != state)
+		regularInput({code: btn, fake:true, gamepad:true}, state);
+}
+
+function updateGamepad() {
+	if (gamepadIndex === null) return;
+	
+	const gamepads = navigator.getGamepads();
+	const gp = gamepads[gamepadIndex];
+
+	if (!gp) return;
+	
+	const buttons = {// Standard / Playsation
+		a: gp.buttons[0]?.pressed,// A / Cross
+		b: gp.buttons[1]?.pressed,// B / Circle
+		x: gp.buttons[2]?.pressed,// X / Square
+		y: gp.buttons[3]?.pressed,// Y / Triangle
+	};
+	
+	const dpad = {
+		up: gp.buttons[12]?.pressed,
+		down: gp.buttons[13]?.pressed,
+		left: gp.buttons[14]?.pressed,
+		right: gp.buttons[15]?.pressed,
+	};
+	
+	// Axes 0: Horizontal (-1 Left, 1 Right)
+	// Axes 1: Vertical (-1 Up, 1 Down)
+	const deadzone = 0.2; // Ignore minor drift near center
+	const stickX = Math.abs(gp.axes[0]) > deadzone ? gp.axes[0] : 0;
+	const stickY = Math.abs(gp.axes[1]) > deadzone ? gp.axes[1] : 0;
+
+	// Combined direction readout (D-pad OR Stick)
+	registerGamepadInput("ArrowLeft", dpad.left || stickX < -0.5);
+	registerGamepadInput("ArrowRight", dpad.right || stickX > 0.5);
+	registerGamepadInput("ArrowUp", dpad.up || stickY < -0.5);
+	registerGamepadInput("ArrowDown", dpad.down || stickY > 0.5);
+	
+	registerGamepadInput("KeyZ", buttons.a);
+	registerGamepadInput("KeyX", buttons.b);
+	registerGamepadInput("KeyC", buttons.x);
+	
+	requestAnimationFrame(updateGamepad);
+}
+
+let usingGamepad = false;
+
+function regularInput(e, s) {
+	if (showController && (e.fake !== true || e.gamepad && s)) {
+		// hide onscreen controller if using keyboard or gamepad
+		showController = false;
+	}
+	
+	if (e.gamepad && !usingGamepad) { // prevents gamepad cucking keyboard
+		if (s) usingGamepad = true;
+		else return;
+	} else usingGamepad = e.gamepad == true;
 	
 	code = e.code;
 	if (code in alts) code = alts[code];
