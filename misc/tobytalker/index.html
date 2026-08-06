@@ -330,10 +330,11 @@ function newButts(event) {
 			}
 		}
 	}
-	
-	for (const key of Object.keys(keysHeld)) {
-		if (!hitKeys.includes(key))
-			keysHeld[key] = false;
+	if (showController) { // would also cuck keyboard if mouse is moving eww
+		for (const key of Object.keys(keysHeld)) {
+			if (!hitKeys.includes(key))
+				keysHeld[key] = false;
+		}
 	}
 }
 
