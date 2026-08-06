@@ -43,8 +43,9 @@ body {
 <script>
 // engine.js
 let zoom = 1;
-let minZoom = 1;//0.5;
-let maxZoom = 1;//2
+let nextZoom = 1;
+let minZoom = 0.125;
+let maxZoom = 2;
 let lastTouchDistance = null;
 
 function clamp(v, lo, hi) {
@@ -52,7 +53,7 @@ function clamp(v, lo, hi) {
 }
 
 function applyZoom(amount) {
-	zoom = clamp(zoom + amount, minZoom, maxZoom);
+	nextZoom = clamp(nextZoom + amount, minZoom, maxZoom);
 }
 
 function handleWheelZoom(event) {
@@ -1003,16 +1004,16 @@ function movePlayers(delta) {
 }
 
 function updateScroll(target) {
-	let followX = Math.floor((bWidth-target.size)/2);
+	let followX = Math.floor((canvas.width-target.size)/2) - pWidth;
 	let followY;
 	if (target.bigSprite != undefined) {
 		targetHeight = bigSpriteIndex[target.bigSprite][3];
-		followY = Math.floor((bHeight+targetHeight)/2);
+		followY = Math.floor((canvas.height+(targetHeight))/2) - pHeight;
 	}
 	else
-		followY = Math.floor((bHeight-target.size)/2);
+		followY = Math.floor((canvas.height-target.size)/2) - pHeight;
 	
-	if (!keysHeld.KeyM) {
+	if (zoom == 1) {
 		return
 	}
 	
@@ -1383,6 +1384,12 @@ function draw(now) {
 	lastLastTime = lastTime;
 	lastTime = now;
 	
+	if (nextZoom != zoom) {
+		zoom = Math.floor(nextZoom * 400) / 400;
+		nextZoom = zoom;
+		resize();
+	}
+	
 	if (!menu)
 		movePlayers(delta);
 	
@@ -1416,7 +1423,7 @@ function draw(now) {
 	
 	drawController();
 	
-	if (border && !keysHeld["KeyB"]) {
+	if (border && !keysHeld["KeyB"] && zoom == 1) {
 		ctx.fillStyle = "#000";
 		ctx.fillRect(0, 0, pWidth, bHeight);
 		ctx.fillRect(bWidth+pWidth, 0, pWidth, bHeight);
@@ -1673,7 +1680,7 @@ function registerGamepadInput(slot, btn, state) {
 	if (state) showController = false; // hide the touch pad, we've got hardware
 }
 
-function readGamepad(slot) {
+function readGamepad(slot, inputDelta) {
 	const gp = navigator.getGamepads()[gamepadIndices[slot]];
 	
 	if (!gp) return;
@@ -1683,6 +1690,9 @@ function readGamepad(slot) {
 		b: gp.buttons[1]?.pressed,// B / Circle
 		x: gp.buttons[2]?.pressed,// X / Square
 		y: gp.buttons[3]?.pressed,// Y / Triangle
+		
+		lt: gp.buttons[6]?.pressed,// left trigger
+		rt: gp.buttons[7]?.pressed,// right trigger
 	};
 	
 	const dpad = {
@@ -1736,11 +1746,27 @@ function readGamepad(slot) {
 	registerGamepadInput(slot, "KeyZ", buttons.a);
 	registerGamepadInput(slot, "KeyX", buttons.b);
 	registerGamepadInput(slot, "KeyC", buttons.x);
+	registerGamepadInput(slot, "KeyV", buttons.y);
+	
+	if (buttons.lt) {
+		nextZoom = Math.min(maxZoom, Math.max(minZoom, nextZoom - (gp.buttons[6]?.value*inputDelta*0.005)));
+	}
+	else if (buttons.rt) {
+		nextZoom = Math.min(maxZoom, Math.max(minZoom, nextZoom + (gp.buttons[7]?.value*inputDelta*0.005)));
+	}
 }
 
-function updateGamepads() {
+let lastInputTime = 0;
+function updateGamepads(now) {
+	if (lastInputTime == 0) {
+		lastInputTime = now;
+	}
+	var inputDelta = now - lastInputTime;
+	
+	lastInputTime = now;
+	
 	for (let slot = 0; slot < gamepadIndices.length; slot++)
-		readGamepad(slot);
+		readGamepad(slot, inputDelta);
 	
 	requestAnimationFrame(updateGamepads);
 }
@@ -1765,6 +1791,7 @@ function regularInput(e, s) {
         return;
 	
 	keysHeld[code] = s;
+	
 	
 	if (["KeyZ", "Enter", "NumpadEnter"].includes(code) && s) {
 		doKeyZ();
