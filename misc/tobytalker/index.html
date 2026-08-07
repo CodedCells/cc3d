@@ -1717,7 +1717,7 @@ function readGamepad(slot, inputDelta) {
 	const pl = players[slot];
 	if (pl.name == "tobytalker") {
 		const face = [!!buttons.a, !!buttons.b, !!buttons.x, !!buttons.y];
-		worldColliders.bboxes[0] = {minX: 0, maxX: 0, minY: 0, maxY: 0}
+		worldColliders.bboxes[0].minX = 188;
 		
 		if (face.some((down, i) => down && !pl.facePressed[i])) {
 			playAudio(sndPomBark, squeakCounter++, 0.2);
