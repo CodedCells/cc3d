@@ -417,6 +417,7 @@ function placeButton(name, x, y, sprite, type, target, antlineHook= null) {
 		sprite: sprite, moving: false, flip: false,
 		target: target,
 		antlineHook: antlineHook,
+		activated: null,
 		renderPriority: 100
 	}
 	objects[name] = buttonData;
@@ -1671,7 +1672,9 @@ function moveButton(name, data, delta) {
 		if (!touching) {
 			pitch = -6;
 		}
-		playAudio(sndNoise, pitch, 0.2);
+		
+		if (data.activated !== null) // starts as null, don't kill users ears
+			playAudio(sndNoise, pitch, 0.2);
 		
 		if (touching) {
 			if (data.sprite % 2 == 0)
